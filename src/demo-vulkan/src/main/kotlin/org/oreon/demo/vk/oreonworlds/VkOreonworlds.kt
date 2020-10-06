@@ -14,7 +14,7 @@ object VkOreonworlds {
         val renderEngine = VkDeferredEngine()
 //        renderEngine.setGui(VkSystemMonitor())
         renderEngine.init()
-        renderEngine.sceneGraph?.water = Water()
+        renderEngine.sceneGraph?.setWater(Water())
         renderEngine.sceneGraph?.addObject(Atmosphere())
 //        renderEngine.getSceneGraph().setTerrain(new Planet());
 

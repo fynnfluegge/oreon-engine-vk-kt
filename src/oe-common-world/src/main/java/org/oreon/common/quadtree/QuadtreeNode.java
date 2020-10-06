@@ -113,7 +113,7 @@ public abstract class QuadtreeNode extends Renderable{
 	
 	public void record(RenderList renderList){
 
-		if (!renderList.contains(id)){
+		if (!renderList.contains(getId())){
 			renderList.add(this);
 			renderList.setChanged(true);
 		}

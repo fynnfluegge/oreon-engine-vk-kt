@@ -256,11 +256,11 @@ public class VkGUI extends GUI{
 		public SingleAttachmentFbo(VkDevice device,
 				VkPhysicalDeviceMemoryProperties memoryProperties) {
 			
-			width = BaseContext.Companion.getConfig().getFrameWidth();
-			height = BaseContext.Companion.getConfig().getFrameHeight();
+			setWidth(BaseContext.Companion.getConfig().getFrameWidth());
+			setHeight(BaseContext.Companion.getConfig().getFrameHeight());
 			
 			VkImageBundle colorAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-					width, height, VK_FORMAT_R16G16B16A16_SFLOAT, 1);
+					getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, 1);
 			
 			attachments.put(Attachment.COLOR, colorAttachment);
 			
@@ -284,13 +284,13 @@ public class VkGUI extends GUI{
 			renderPass.createSubpass();
 			renderPass.createRenderPass();
 
-			depthAttachmentCount = 0;
-			colorAttachmentCount = renderPass.getAttachmentCount()-depthAttachmentCount;
+			setDepthAttachmentCount(0);
+			setColorAttachmentCount(renderPass.getAttachmentCount()-getDepthAttachmentCount());
 			
 			LongBuffer pImageViews = memAllocLong(renderPass.getAttachmentCount());
 			pImageViews.put(0, attachments.get(Attachment.COLOR).getImageView().getHandle());
 
-			frameBuffer = new VkFrameBuffer(device, width, height, 1, pImageViews, renderPass.getHandle());
+			frameBuffer = new VkFrameBuffer(device, getWidth(), getHeight(), 1, pImageViews, renderPass.getHandle());
 		}
 	}
 	

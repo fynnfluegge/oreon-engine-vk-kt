@@ -44,7 +44,7 @@ public class VkDirectionalLight extends DirectionalLight{
 	    		VkContext.INSTANCE.getDeviceManager().getLogicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE)
 	    		.getDescriptorPool(Thread.currentThread().getId()).getHandle(),
 	    		descriptorSetLayout.getHandlePointer());
-	    descriptorSet.updateDescriptorBuffer(ubo_light.getHandle(), lightBufferSize, 0, 0,
+	    descriptorSet.updateDescriptorBuffer(ubo_light.getHandle(), getLightBufferSize(), 0, 0,
 	    		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 	    
 	    VkContext.INSTANCE.getResources().getDescriptors().put(VkDescriptorName.DIRECTIONAL_LIGHT, new VkDescriptor(descriptorSet, descriptorSetLayout));

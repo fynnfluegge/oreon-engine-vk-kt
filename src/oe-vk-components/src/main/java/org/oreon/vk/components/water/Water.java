@@ -543,12 +543,12 @@ public class Water extends Renderable{
 		public ReflectionRefractionFbo(VkDevice device,
 				VkPhysicalDeviceMemoryProperties memoryProperties) {
 			
-			width = BaseContext.Companion.getConfig().getFrameWidth()/2;
-			height = BaseContext.Companion.getConfig().getFrameHeight()/2;
+			setWidth(BaseContext.Companion.getConfig().getFrameWidth()/2);
+			setHeight(BaseContext.Companion.getConfig().getFrameHeight()/2);
 			
-			VkImageBundle albedoBuffer = new FrameBufferColorAttachment(device, memoryProperties, width, height,
+			VkImageBundle albedoBuffer = new FrameBufferColorAttachment(device, memoryProperties, getWidth(), getHeight(),
 					VK_FORMAT_R16G16B16A16_SFLOAT, 1);
-			VkImageBundle depthBuffer = new FrameBufferDepthAttachment(device, memoryProperties, width, height,
+			VkImageBundle depthBuffer = new FrameBufferDepthAttachment(device, memoryProperties, getWidth(), getHeight(),
 					VK_FORMAT_D16_UNORM, 1);
 			
 			attachments.put(Attachment.COLOR, albedoBuffer);
@@ -578,14 +578,14 @@ public class Water extends Renderable{
 			renderPass.createSubpass();
 			renderPass.createRenderPass();
 			
-			depthAttachmentCount = 1;
-			colorAttachmentCount = renderPass.getAttachmentCount()-depthAttachmentCount;
+			setDepthAttachmentCount(1);
+			setColorAttachmentCount(renderPass.getAttachmentCount()-getDepthAttachmentCount());
 			
 			LongBuffer pImageViews = memAllocLong(renderPass.getAttachmentCount());
 			pImageViews.put(0, attachments.get(Attachment.COLOR).getImageView().getHandle());
 			pImageViews.put(1, attachments.get(Attachment.DEPTH).getImageView().getHandle());
 			
-			frameBuffer = new VkFrameBuffer(device, width, height, 1,
+			frameBuffer = new VkFrameBuffer(device, getWidth(), getHeight(), 1,
 					pImageViews, renderPass.getHandle());
 		}
 	}

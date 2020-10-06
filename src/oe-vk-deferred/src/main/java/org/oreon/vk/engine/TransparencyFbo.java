@@ -31,20 +31,20 @@ public class TransparencyFbo extends VkFrameBufferObject{
 	
 	public TransparencyFbo(VkDevice device, VkPhysicalDeviceMemoryProperties memoryProperties) {
 		
-		width = BaseContext.Companion.getConfig().getFrameWidth();
-		height = BaseContext.Companion.getConfig().getFrameHeight();
-		
+		setWidth(BaseContext.Companion.getConfig().getFrameWidth());
+		setHeight(BaseContext.Companion.getConfig().getFrameHeight());
+
 		VkImageBundle albedoAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, 1);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, 1);
 		
 		VkImageBundle alphaAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, 1);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, 1);
 
 		VkImageBundle lightScatteringAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, 1);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, 1);
 		
 		VkImageBundle depthBuffer = new FrameBufferDepthAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_D32_SFLOAT, 1);
+				getWidth(), getHeight(), VK_FORMAT_D32_SFLOAT, 1);
 		
 		attachments.put(Attachment.COLOR, albedoAttachment);
 		attachments.put(Attachment.ALPHA, alphaAttachment);
@@ -80,8 +80,8 @@ public class TransparencyFbo extends VkFrameBufferObject{
 		renderPass.createSubpass();
 		renderPass.createRenderPass();
 
-		depthAttachmentCount = 1;
-		colorAttachmentCount = renderPass.getAttachmentCount()-depthAttachmentCount;
+		setDepthAttachmentCount(1);
+		setColorAttachmentCount(renderPass.getAttachmentCount()-getDepthAttachmentCount());
 
 		LongBuffer pImageViews = memAllocLong(renderPass.getAttachmentCount());
 		pImageViews.put(0, attachments.get(Attachment.COLOR).getImageView().getHandle());
@@ -89,7 +89,7 @@ public class TransparencyFbo extends VkFrameBufferObject{
 		pImageViews.put(2, attachments.get(Attachment.LIGHT_SCATTERING).getImageView().getHandle());
 		pImageViews.put(3, attachments.get(Attachment.DEPTH).getImageView().getHandle());
 		
-		frameBuffer = new VkFrameBuffer(device, width, height, 1, pImageViews, renderPass.getHandle());
+		frameBuffer = new VkFrameBuffer(device, getWidth(), getHeight(), 1, pImageViews, renderPass.getHandle());
 	}
 
 }

@@ -37,27 +37,27 @@ public class OffScreenFbo extends VkFrameBufferObject {
 
 	public OffScreenFbo(VkDevice device, VkPhysicalDeviceMemoryProperties memoryProperties) {
 
-		width = BaseContext.Companion.getConfig().getFrameWidth();
-		height = BaseContext.Companion.getConfig().getFrameHeight();
+		setWidth(BaseContext.Companion.getConfig().getFrameWidth());
+		setHeight(BaseContext.Companion.getConfig().getFrameHeight());
 		int samples = BaseContext.Companion.getConfig().getMultisampling_sampleCount();
 
 		VkImageBundle albedoAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, samples);
 		
 		VkImageBundle worldPositionAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R32G32B32A32_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_R32G32B32A32_SFLOAT, samples);
 
 		VkImageBundle normalAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, samples);
 
 		VkImageBundle lightScatteringMaskAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, samples);
 		
 		VkImageBundle specularEmissionAttachment = new FrameBufferColorAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_R16G16B16A16_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_R16G16B16A16_SFLOAT, samples);
 
 		VkImageBundle depthBuffer = new FrameBufferDepthAttachment(device, memoryProperties,
-				width, height, VK_FORMAT_D32_SFLOAT, samples);
+				getWidth(), getHeight(), VK_FORMAT_D32_SFLOAT, samples);
 
 		attachments.put(Attachment.COLOR, albedoAttachment);
 		attachments.put(Attachment.POSITION, worldPositionAttachment);
@@ -103,8 +103,8 @@ public class OffScreenFbo extends VkFrameBufferObject {
 		renderPass.createSubpass();
 		renderPass.createRenderPass();
 
-		depthAttachmentCount = 1;
-		colorAttachmentCount = renderPass.getAttachmentCount()-depthAttachmentCount;
+		setDepthAttachmentCount(1);
+		setColorAttachmentCount(renderPass.getAttachmentCount()-getDepthAttachmentCount());
 
 		LongBuffer pImageViews = memAllocLong(renderPass.getAttachmentCount());
 		pImageViews.put(0, attachments.get(Attachment.COLOR).getImageView().getHandle());
@@ -114,7 +114,7 @@ public class OffScreenFbo extends VkFrameBufferObject {
 		pImageViews.put(4, attachments.get(Attachment.LIGHT_SCATTERING).getImageView().getHandle());
 		pImageViews.put(5, attachments.get(Attachment.DEPTH).getImageView().getHandle());
 		
-		frameBuffer = new VkFrameBuffer(device, width, height, 1, pImageViews, renderPass.getHandle());
+		frameBuffer = new VkFrameBuffer(device, getWidth(), getHeight(), 1, pImageViews, renderPass.getHandle());
 	}
 
 }
