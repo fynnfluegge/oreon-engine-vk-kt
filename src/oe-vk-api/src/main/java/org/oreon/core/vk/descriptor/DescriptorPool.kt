@@ -1,6 +1,5 @@
 package org.oreon.core.vk.descriptor
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDescriptorPoolCreateInfo
@@ -9,10 +8,10 @@ import org.lwjgl.vulkan.VkDevice
 import org.oreon.core.vk.util.VkUtil
 
 class DescriptorPool(private val device: VkDevice, poolSizeCount: Int) {
-    @Getter
-    private var handle: Long = 0
-    private val poolSizes: VkDescriptorPoolSize.Buffer
-    private var maxSets: Int
+
+    var handle: Long = 0
+    private val poolSizes: VkDescriptorPoolSize.Buffer = VkDescriptorPoolSize.calloc(poolSizeCount)
+    private var maxSets: Int = 0
     fun create() {
         poolSizes.flip()
         val createInfo = VkDescriptorPoolCreateInfo.calloc()
@@ -43,8 +42,4 @@ class DescriptorPool(private val device: VkDevice, poolSizeCount: Int) {
         VK10.vkDestroyDescriptorPool(device, handle, null)
     }
 
-    init {
-        poolSizes = VkDescriptorPoolSize.calloc(poolSizeCount)
-        maxSets = 0
-    }
 }

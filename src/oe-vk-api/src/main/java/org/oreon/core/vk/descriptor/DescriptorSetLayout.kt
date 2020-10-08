@@ -1,6 +1,5 @@
 package org.oreon.core.vk.descriptor
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDescriptorSetLayoutBinding
@@ -10,12 +9,11 @@ import org.oreon.core.vk.util.VkUtil
 import java.nio.LongBuffer
 
 class DescriptorSetLayout(private val device: VkDevice, bindingCount: Int) {
-    @Getter
-    private var handle: Long = 0
 
-    @Getter
-    private var handlePointer: LongBuffer? = null
-    private val layoutBindings: VkDescriptorSetLayoutBinding.Buffer
+    var handle: Long = 0
+    lateinit var handlePointer: LongBuffer
+    private val layoutBindings: VkDescriptorSetLayoutBinding.Buffer = VkDescriptorSetLayoutBinding.calloc(bindingCount)
+
     fun create() {
         layoutBindings.flip()
         val layoutInfo = VkDescriptorSetLayoutCreateInfo.calloc()
@@ -48,7 +46,4 @@ class DescriptorSetLayout(private val device: VkDevice, bindingCount: Int) {
         handle = -1
     }
 
-    init {
-        layoutBindings = VkDescriptorSetLayoutBinding.calloc(bindingCount)
-    }
 }
