@@ -31,7 +31,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<sourceDirectory>src/main/java</sourceDirectory>
+		<sourceDirectory>src/main/kotlin</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
