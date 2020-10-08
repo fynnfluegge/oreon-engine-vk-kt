@@ -12,9 +12,9 @@ import org.oreon.core.util.Constants
 import java.nio.FloatBuffer
 
 abstract class DirectionalLight private constructor(private var direction: Vec3f, ambient: Vec3f, color: Vec3f?, intensity: Float) : Light(color, intensity) {
-    var ambient: Vec3f? = null
+    var ambient: Vec3f = ambient
     var m_View: Matrix4f
-    var right: Vec3f? = null
+    var right: Vec3f
     var up: Vec3f
     val splitLightCameras: Array<PssmCamera?>
     var floatBufferLight: FloatBuffer? = null
@@ -117,10 +117,10 @@ abstract class DirectionalLight private constructor(private var direction: Vec3f
     abstract fun updateMatricesUbo()
 
     init {
-        this.ambient = ambient
         up = Vec3f(direction.x, 0f, direction.z)
         up.y = -(up.x * direction.x + up.z * direction.z) / direction.y
-        if (direction.dot(up) != 0f) //			log.warn("DirectionalLight vector up " + up + " and direction " +  direction + " not orthogonal");
+//        if (direction.dot(up) != 0f)
+//          log.warn("DirectionalLight vector up " + up + " and direction " +  direction + " not orthogonal");
             right = up.cross(getDirection()).normalize()
         m_View = Matrix4f().View(getDirection(), up)
         floatBufferMatrices = BufferUtil.createFloatBuffer(matricesBufferSize)
