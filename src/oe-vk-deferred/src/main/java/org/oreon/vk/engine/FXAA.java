@@ -40,8 +40,7 @@ import lombok.Getter;
 public class FXAA {
 	
 	private VkImage fxaaImage;
-	@Getter
-	private VkImageView fxaaImageView;
+	public VkImageView fxaaImageView;
 	private VkPipeline computePipeline;
 	private DescriptorSet descriptorSet;
 	private DescriptorSetLayout descriptorSetLayout;

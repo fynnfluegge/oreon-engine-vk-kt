@@ -35,15 +35,12 @@ import lombok.Getter;
 public class SampleCoverage {
 	
 	private VkImage sampleCoverageImage;
-	private VkImage lightScatteringImage;
+	public VkImage lightScatteringImage;
 	private VkImage specularEmissionDiffuseSsaoBloomImage;
-	
-	@Getter
-	private VkImageView sampleCoverageImageView;
-	@Getter
-	private VkImageView lightScatteringImageView;
-	@Getter
-	private VkImageView specularEmissionDiffuseSsaoBloomImageView;
+
+	public VkImageView sampleCoverageImageView;
+	public VkImageView lightScatteringImageView;
+	public VkImageView specularEmissionDiffuseSsaoBloomImageView;
 	
 	private VkPipeline computePipeline;
 	private DescriptorSet descriptorSet;

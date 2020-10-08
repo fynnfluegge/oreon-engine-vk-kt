@@ -68,9 +68,8 @@ public class OpaqueTransparencyBlending {
 	private VkSampler transparencySceneDepthSampler;
 	private VkSampler transparencyAlphaSampler;
 	private VkSampler transparencyLightScatteringSampler;
-	
-	@Getter
-	private VkSemaphore signalSemaphore;
+
+	public VkSemaphore signalSemaphore;
 
 	public OpaqueTransparencyBlending(VkDeviceBundle deviceBundle,
 			int width, int height, VkImageView opaqueSceneImageView,

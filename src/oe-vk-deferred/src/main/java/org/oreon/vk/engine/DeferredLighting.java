@@ -38,8 +38,7 @@ import javax.swing.*;
 public class DeferredLighting {
 	
 	private VkImage deferredLightingSceneImage;
-	@Getter
-	private VkImageView deferredLightingSceneImageView;
+	public VkImageView deferredLightingSceneImageView;
 	private VkPipeline computePipeline;
 	private DescriptorSet descriptorSet;
 	private DescriptorSetLayout descriptorSetLayout;
