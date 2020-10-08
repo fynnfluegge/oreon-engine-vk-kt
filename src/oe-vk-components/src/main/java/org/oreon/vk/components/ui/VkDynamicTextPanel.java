@@ -75,8 +75,8 @@ public class VkDynamicTextPanel extends UITextPanel{
 		
 		ByteBuffer ubo = memAlloc(Float.BYTES * panel.getVertices().length * 4);
 		for (int i=0; i<panel.getVertices().length; i++){
-			ubo.putFloat(panel.getVertices()[i].getUVCoord().getX());
-			ubo.putFloat(panel.getVertices()[i].getUVCoord().getY());
+			ubo.putFloat(panel.getVertices()[i].getUvCoord().getX());
+			ubo.putFloat(panel.getVertices()[i].getUvCoord().getY());
 			ubo.putFloat(0);
 			ubo.putFloat(0);
 		}
@@ -161,8 +161,8 @@ public class VkDynamicTextPanel extends UITextPanel{
 		
 		ByteBuffer ubo = memAlloc(Float.BYTES * panel.getVertices().length * 4);
 		for (int i=0; i<panel.getVertices().length; i++){
-			ubo.putFloat(panel.getVertices()[i].getUVCoord().getX());
-			ubo.putFloat(panel.getVertices()[i].getUVCoord().getY());
+			ubo.putFloat(panel.getVertices()[i].getUvCoord().getX());
+			ubo.putFloat(panel.getVertices()[i].getUvCoord().getY());
 			ubo.putFloat(0);
 			ubo.putFloat(0);
 		}

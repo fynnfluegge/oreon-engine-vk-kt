@@ -72,8 +72,8 @@ public class BufferUtil {
 			buffer.put(vertices[i].getNormal().getX());
 			buffer.put(vertices[i].getNormal().getY());
 			buffer.put(vertices[i].getNormal().getZ());
-			buffer.put(vertices[i].getUVCoord().getX());
-			buffer.put(vertices[i].getUVCoord().getY());
+			buffer.put(vertices[i].getUvCoord().getX());
+			buffer.put(vertices[i].getUvCoord().getY());
 			
 			if (vertices[i].getTangent() != null && vertices[i].getBitangent() != null){
 				buffer.put(vertices[i].getTangent().getX());
@@ -110,8 +110,8 @@ public class BufferUtil {
 			
 		for(int i = 0; i < vertices.length; i++)
 		{
-			buffer.put(vertices[i].getUVCoord().getX());
-			buffer.put(vertices[i].getUVCoord().getY());
+			buffer.put(vertices[i].getUvCoord().getX());
+			buffer.put(vertices[i].getUvCoord().getY());
 		}	
 		
 		buffer.flip();
@@ -340,8 +340,8 @@ public class BufferUtil {
 				layout == VertexLayout.POS_UV ||
 				layout == VertexLayout.POS_NORMAL_UV_TAN_BITAN ||
 				layout == VertexLayout.POS2D_UV){
-				floatBuffer.put(vertices[i].getUVCoord().getX());
-				floatBuffer.put(vertices[i].getUVCoord().getY());
+				floatBuffer.put(vertices[i].getUvCoord().getX());
+				floatBuffer.put(vertices[i].getUvCoord().getY());
 			}
 			
 			if (layout == VertexLayout.POS_NORMAL_UV_TAN_BITAN){

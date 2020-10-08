@@ -74,7 +74,7 @@ public abstract class UITextPanel extends UIElement{
 		
 		int i = 0;
 		for (Vertex v : panel.getVertices()){
-			v.setUVCoord(uvList.get(i));
+			v.setUvCoord(uvList.get(i));
 			i++;
 		}
 	}

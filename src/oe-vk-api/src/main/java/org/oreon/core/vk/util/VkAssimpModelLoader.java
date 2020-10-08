@@ -135,10 +135,10 @@ public class VkAssimpModelLoader {
 				vertex.setNormal(new Vec3f(0,0,0));
 			}
 			if (!texCoords.isEmpty()){
-				vertex.setUVCoord(texCoords.get(i));
+				vertex.setUvCoord(texCoords.get(i));
 			}
 			else{
-				vertex.setUVCoord(new Vec2f(0,0));
+				vertex.setUvCoord(new Vec2f(0,0));
 			}
 			if (!tangents.isEmpty()){
 				vertex.setTangent(tangents.get(i));

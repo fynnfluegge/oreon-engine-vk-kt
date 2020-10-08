@@ -163,17 +163,17 @@ object Util {
             if (mesh.vertices[mesh.indices[i + 1]].bitangent == null) mesh.vertices[mesh.indices[i + 1]].bitangent = Vec3f(0f, 0f, 0f)
             if (mesh.vertices[mesh.indices[i + 2]].tangent == null) mesh.vertices[mesh.indices[i + 2]].tangent = Vec3f(0f, 0f, 0f)
             if (mesh.vertices[mesh.indices[i + 2]].bitangent == null) mesh.vertices[mesh.indices[i + 2]].bitangent = Vec3f(0f, 0f, 0f)
-            mesh.vertices[mesh.indices[i]].tangent = mesh.vertices[mesh.indices[i]].tangent.add(tangent)
-            mesh.vertices[mesh.indices[i]].bitangent = mesh.vertices[mesh.indices[i]].bitangent.add(bitangent)
-            mesh.vertices[mesh.indices[i + 1]].tangent = mesh.vertices[mesh.indices[i + 1]].tangent.add(tangent)
-            mesh.vertices[mesh.indices[i + 1]].bitangent = mesh.vertices[mesh.indices[i + 1]].bitangent.add(bitangent)
-            mesh.vertices[mesh.indices[i + 2]].tangent = mesh.vertices[mesh.indices[i + 2]].tangent.add(tangent)
-            mesh.vertices[mesh.indices[i + 2]].bitangent = mesh.vertices[mesh.indices[i + 2]].bitangent.add(bitangent)
+            mesh.vertices[mesh.indices[i]].tangent = mesh.vertices[mesh.indices[i]].tangent!!.add(tangent)
+            mesh.vertices[mesh.indices[i]].bitangent = mesh.vertices[mesh.indices[i]].bitangent!!.add(bitangent)
+            mesh.vertices[mesh.indices[i + 1]].tangent = mesh.vertices[mesh.indices[i + 1]].tangent!!.add(tangent)
+            mesh.vertices[mesh.indices[i + 1]].bitangent = mesh.vertices[mesh.indices[i + 1]].bitangent!!.add(bitangent)
+            mesh.vertices[mesh.indices[i + 2]].tangent = mesh.vertices[mesh.indices[i + 2]].tangent!!.add(tangent)
+            mesh.vertices[mesh.indices[i + 2]].bitangent = mesh.vertices[mesh.indices[i + 2]].bitangent!!.add(bitangent)
             i += 3
         }
         for (vertex in mesh.vertices) {
-            vertex.tangent = vertex.tangent.normalize()
-            vertex.bitangent = vertex.bitangent.normalize()
+            vertex.tangent = vertex.tangent!!.normalize()
+            vertex.bitangent = vertex.bitangent!!.normalize()
         }
     }
 
