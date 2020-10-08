@@ -1,14 +1,13 @@
 package org.oreon.core.vk.context
 
-import lombok.Getter
 import org.oreon.core.vk.device.LogicalDevice
 import org.oreon.core.vk.device.PhysicalDevice
 import org.oreon.core.vk.device.VkDeviceBundle
 import java.util.*
 
-@Getter
 class DeviceManager {
-    private val devices: HashMap<DeviceType, VkDeviceBundle>
+
+    private val devices: HashMap<DeviceType, VkDeviceBundle> = HashMap()
 
     enum class DeviceType {
         MAJOR_GRAPHICS_DEVICE, SECONDARY_GRAPHICS_DEVICE, COMPUTING_DEVICE, SLI_DISCRETE_DEVICE0, SLI_DISCRETE_DEVICE1
@@ -30,7 +29,4 @@ class DeviceManager {
         devices[deviceType] = deviceBundle
     }
 
-    init {
-        devices = HashMap()
-    }
 }
