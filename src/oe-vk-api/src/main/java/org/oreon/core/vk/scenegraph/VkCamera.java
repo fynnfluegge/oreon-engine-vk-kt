@@ -41,7 +41,7 @@ public class VkCamera extends Camera{
 		
 	    uniformBuffer = new VkUniformBuffer(
 	    		device, VkContext.INSTANCE.getDeviceManager().getPhysicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE)
-	    		.getMemoryProperties(), BufferUtil.createByteBuffer(floatBuffer));
+	    		.getMemoryProperties(), BufferUtil.createByteBuffer(getFloatBuffer()));
 	    
 	    descriptorSetLayout = new DescriptorSetLayout(device, 1);
 	    descriptorSetLayout.addLayoutBinding(0,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -52,7 +52,7 @@ public class VkCamera extends Camera{
 	    		VkContext.INSTANCE.getDeviceManager().getLogicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE)
 	    		.getDescriptorPool(Thread.currentThread().getId()).getHandle(),
 	    		descriptorSetLayout.getHandlePointer());
-	    descriptorSet.updateDescriptorBuffer(uniformBuffer.getHandle(), bufferSize, 0, 0,
+	    descriptorSet.updateDescriptorBuffer(uniformBuffer.getHandle(), getBufferSize(), 0, 0,
 	    		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 	    
 	    VkContext.INSTANCE.getResources().getDescriptors().put(VkDescriptorName.CAMERA, new VkDescriptor(descriptorSet, descriptorSetLayout));
@@ -63,7 +63,7 @@ public class VkCamera extends Camera{
 		
 		super.update();
 		
-		uniformBuffer.updateData(BufferUtil.createByteBuffer(floatBuffer));
+		uniformBuffer.updateData(BufferUtil.createByteBuffer(getFloatBuffer()));
 	}
 	
 	public void shutdown(){
