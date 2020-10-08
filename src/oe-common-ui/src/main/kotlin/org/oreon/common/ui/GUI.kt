@@ -1,13 +1,12 @@
 package org.oreon.common.ui
 
-import lombok.Getter
 import org.oreon.core.scenegraph.RenderList
 import java.util.*
 import java.util.function.Consumer
 
 abstract class GUI {
-    @Getter
-    private val screens = ArrayList<UIScreen>()
+
+    val screens = ArrayList<UIScreen>()
     open fun update() {
         screens.forEach(Consumer { screen: UIScreen -> screen.update() })
     }

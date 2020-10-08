@@ -12,7 +12,7 @@ object VkOreonworlds {
     fun main(args: Array<String>) {
         VkContext.create()
         val renderEngine = VkDeferredEngine()
-//        renderEngine.setGui(VkSystemMonitor())
+        renderEngine.setGui(VkSystemMonitor())
         renderEngine.init()
         renderEngine.sceneGraph?.setWater(Water())
         renderEngine.sceneGraph?.addObject(Atmosphere())

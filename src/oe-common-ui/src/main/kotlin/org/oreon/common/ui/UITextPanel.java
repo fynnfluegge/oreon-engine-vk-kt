@@ -32,7 +32,7 @@ public abstract class UITextPanel extends UIElement{
 		
 		for (int i=0; i<numFonts; i++){
 			 
-			Mesh mesh = UIPanelLoader.load("gui/basicPanel.gui");
+			Mesh mesh = UIPanelLoader.INSTANCE.load("gui/basicPanel.gui");
 			
 			for (Vertex v : mesh.getVertices()){
 				v.getPosition().setX(v.getPosition().getX() + i*0.65f);

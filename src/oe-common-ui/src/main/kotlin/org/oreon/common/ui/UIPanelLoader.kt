@@ -21,10 +21,9 @@ object UIPanelLoader {
             val `is` = UIPanelLoader::class.java.classLoader.getResourceAsStream(fileName)
             try {
                 meshReader = BufferedReader(InputStreamReader(`is`))
-                var line: String
+                var line: String?
                 while (meshReader.readLine().also { line = it } != null) {
-                    var tokens: Array<String?> = line.split(" ".toRegex()).toTypedArray()
-                    tokens = removeEmptyStrings(tokens)
+                    var tokens = removeEmptyStrings(line!!.split(" ".toRegex()).toTypedArray())
                     if (tokens.size == 0 || tokens[0] == "#") continue
                     if (tokens[0] == "v") {
                         vertices.add(Vertex(Vec3f(java.lang.Float.valueOf(tokens[1]),
@@ -37,10 +36,8 @@ object UIPanelLoader {
                     }
                 }
                 meshReader.close()
-                val vertexData = arrayOfNulls<Vertex>(vertices.size)
-                vertices.toArray(vertexData)
-                val objectArray = arrayOfNulls<Int>(indices.size)
-                indices.toArray(objectArray)
+                val vertexData = vertices.toTypedArray()
+                val objectArray = indices.toTypedArray()
                 val indexData: IntArray = toIntArray(objectArray)
                 val mesh = Mesh(vertexData, indexData)
                 mesh.vertexLayout = VertexLayout.POS_UV

@@ -153,7 +153,7 @@ public class VkGUI extends GUI{
 		// panel mesh buffer
 		panelMeshBuffer = new VkMeshData(device.getHandle(),
 				memoryProperties, device.getTransferCommandPool(Thread.currentThread().getId()),
-				device.getTransferQueue(), UIPanelLoader.load("gui/basicPanel.gui"),
+				device.getTransferQueue(), UIPanelLoader.INSTANCE.load("gui/basicPanel.gui"),
 				VertexLayout.POS2D);
 		
 		// fullscreen underlay Image resources
