@@ -1,6 +1,5 @@
 package org.oreon.core.vk.synchronization
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDevice
@@ -9,9 +8,10 @@ import org.oreon.core.vk.util.VkUtil
 import java.nio.LongBuffer
 
 class Fence(private val device: VkDevice) {
-    @Getter
-    private val handle: Long
+
+    val handle: Long
     private val pHandle: LongBuffer
+
     fun reset() {
         VkUtil.vkCheckResult(VK10.vkResetFences(device, handle))
     }

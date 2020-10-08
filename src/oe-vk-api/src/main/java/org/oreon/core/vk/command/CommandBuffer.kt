@@ -1,6 +1,5 @@
 package org.oreon.core.vk.command
 
-import lombok.Getter
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.*
@@ -9,11 +8,10 @@ import org.oreon.core.vk.util.VkUtil
 import java.nio.ByteBuffer
 
 open class CommandBuffer(private val device: VkDevice, private val commandPool: Long, level: Int) {
-    @Getter
-    private val handle: VkCommandBuffer
 
-    @Getter
-    private val handlePointer: PointerBuffer
+    val handle: VkCommandBuffer
+    val handlePointer: PointerBuffer
+
     fun beginRecord(flags: Int) {
         val beginInfo = VkCommandBufferBeginInfo.calloc()
                 .sType(VK10.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
@@ -65,7 +63,7 @@ open class CommandBuffer(private val device: VkDevice, private val commandPool: 
         val clearValues = VkClearValue.calloc(
                 colorAttachmentCount + depthAttachment)
         for (i in 0 until colorAttachmentCount) {
-            clearValues.put(VkUtil.getClearValueColor(Vec3f(0, 0, 0)))
+            clearValues.put(VkUtil.getClearValueColor(Vec3f(0f, 0f, 0f)))
         }
         if (depthAttachment == 1) {
             clearValues.put(VkUtil.getClearValueDepth())

@@ -1,6 +1,5 @@
 package org.oreon.core.vk.command
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo
@@ -8,8 +7,9 @@ import org.lwjgl.vulkan.VkDevice
 import org.oreon.core.vk.util.VkUtil
 
 class CommandPool(private val device: VkDevice, queueFamilyIndex: Int) {
-    @Getter
-    private val handle: Long
+
+    val handle: Long
+
     fun destroy() {
         VK10.vkDestroyCommandPool(device, handle, null)
     }

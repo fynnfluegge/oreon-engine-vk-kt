@@ -1,7 +1,5 @@
 package org.oreon.core.vk.command
 
-import lombok.Getter
-import lombok.Setter
 import org.lwjgl.PointerBuffer
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkQueue
@@ -12,12 +10,11 @@ import java.nio.IntBuffer
 import java.nio.LongBuffer
 
 class SubmitInfo() {
-    @Getter
-    private val handle: VkSubmitInfo
 
-    @Setter
-    @Getter
-    private val fence: Fence? = null
+    val handle: VkSubmitInfo = VkSubmitInfo.calloc()
+            .sType(VK10.VK_STRUCTURE_TYPE_SUBMIT_INFO)
+            .pNext(0)
+    var fence: Fence? = null
 
     constructor(buffers: PointerBuffer?) : this() {
         setCommandBuffers(buffers)
@@ -55,9 +52,4 @@ class SubmitInfo() {
                 fence?.handle ?: VK10.VK_NULL_HANDLE))
     }
 
-    init {
-        handle = VkSubmitInfo.calloc()
-                .sType(VK10.VK_STRUCTURE_TYPE_SUBMIT_INFO)
-                .pNext(0)
-    }
 }
