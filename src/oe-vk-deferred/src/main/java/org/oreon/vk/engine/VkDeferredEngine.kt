@@ -217,8 +217,8 @@ class VkDeferredEngine : RenderEngine() {
 
             // Offscreen primary render command buffer
             offScreenPrimaryCmdBuffer!!.reset()
-            offScreenPrimaryCmdBuffer!!.record(offScreenFbo!!.renderPass.handle,
-                    offScreenFbo!!.frameBuffer.handle,
+            offScreenPrimaryCmdBuffer!!.record(offScreenFbo!!.renderPass!!.handle,
+                    offScreenFbo!!.frameBuffer!!.handle,
                     offScreenFbo!!.width,
                     offScreenFbo!!.height,
                     offScreenFbo!!.colorAttachmentCount,
@@ -243,8 +243,8 @@ class VkDeferredEngine : RenderEngine() {
 
             // Tranparency primary render command buffer
             transparencyPrimaryCmdBuffer!!.reset()
-            transparencyPrimaryCmdBuffer!!.record(transparencyFbo!!.renderPass.handle,
-                    transparencyFbo!!.frameBuffer.handle,
+            transparencyPrimaryCmdBuffer!!.record(transparencyFbo!!.renderPass!!.handle,
+                    transparencyFbo!!.frameBuffer!!.handle,
                     transparencyFbo!!.width,
                     transparencyFbo!!.height,
                     transparencyFbo!!.colorAttachmentCount,
