@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class QueueFamily {
 	
-	private int index;
+	public int index;
 	private int count;
 	private int flags;
 	private int presentFlag;

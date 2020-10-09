@@ -86,14 +86,14 @@ class VkDeferredEngine : RenderEngine() {
 
         // offscreen opaque primary command buffer creation
         offScreenPrimaryCmdBuffer = PrimaryCmdBuffer(graphicsDevice!!.logicalDevice.handle,
-                graphicsDevice!!.logicalDevice.getGraphicsCommandPool(Thread.currentThread().id).handle)
+                graphicsDevice!!.logicalDevice.getGraphicsCommandPool(Thread.currentThread().id)!!.handle)
         offScreenSubmitInfo = SubmitInfo()
         offScreenSubmitInfo!!.setCommandBuffers(offScreenPrimaryCmdBuffer!!.handlePointer)
         offScreenSubmitInfo!!.setSignalSemaphores(offScreenSemaphore!!.handlePointer)
 
         // offscreen transparency primary command buffer creation
         transparencyPrimaryCmdBuffer = PrimaryCmdBuffer(graphicsDevice!!.logicalDevice.handle,
-                graphicsDevice!!.logicalDevice.getGraphicsCommandPool(Thread.currentThread().id).handle)
+                graphicsDevice!!.logicalDevice.getGraphicsCommandPool(Thread.currentThread().id)!!.handle)
         transparencySubmitInfo = SubmitInfo()
         transparencySubmitInfo!!.setCommandBuffers(transparencyPrimaryCmdBuffer!!.handlePointer)
         transparencySubmitInfo!!.setSignalSemaphores(transparencySemaphore!!.handlePointer)
@@ -151,7 +151,7 @@ class VkDeferredEngine : RenderEngine() {
 
         // record sample coverage + deferred lighting command buffer
         deferredStageCmdBuffer = CommandBuffer(graphicsDevice!!.logicalDevice.handle,
-                graphicsDevice!!.logicalDevice.getComputeCommandPool(Thread.currentThread().id).handle,
+                graphicsDevice!!.logicalDevice.getComputeCommandPool(Thread.currentThread().id)!!.handle,
                 VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY)
         deferredStageCmdBuffer!!.beginRecord(VK10.VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT)
         sampleCoverage!!.record(deferredStageCmdBuffer)
@@ -170,7 +170,7 @@ class VkDeferredEngine : RenderEngine() {
 
         // record post processing command buffer
         postProcessingCmdBuffer = CommandBuffer(graphicsDevice!!.logicalDevice.handle,
-                graphicsDevice!!.logicalDevice.getComputeCommandPool(Thread.currentThread().id).handle,
+                graphicsDevice!!.logicalDevice.getComputeCommandPool(Thread.currentThread().id)!!.handle,
                 VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY)
         postProcessingCmdBuffer!!.beginRecord(VK10.VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT)
         if (BaseContext.config.fxaaEnabled) {

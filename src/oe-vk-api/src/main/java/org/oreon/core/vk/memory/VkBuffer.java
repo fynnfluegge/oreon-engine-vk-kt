@@ -76,7 +76,7 @@ public class VkBuffer {
 		vkGetBufferMemoryRequirements(device, handle, memRequirements);
         IntBuffer memoryTypeIndex = memAllocInt(1);
         
-        if (!DeviceCapabilities.getMemoryTypeIndex(memoryProperties, 
+        if (!DeviceCapabilities.INSTANCE.getMemoryTypeIndex(memoryProperties,
 				   memRequirements.memoryTypeBits(), 
 				   memoryPropertyFlags,
 				   memoryTypeIndex)){
