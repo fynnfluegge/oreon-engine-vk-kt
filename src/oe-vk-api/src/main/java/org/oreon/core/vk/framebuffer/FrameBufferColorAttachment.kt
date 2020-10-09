@@ -7,7 +7,7 @@ import org.oreon.core.vk.image.VkImageView
 import org.oreon.core.vk.wrapper.image.Image2DDeviceLocal
 import org.oreon.core.vk.wrapper.image.VkImageBundle
 
-class FrameBufferColorAttachment(device: VkDevice?, memoryProperties: VkPhysicalDeviceMemoryProperties?,
+class FrameBufferColorAttachment(device: VkDevice, memoryProperties: VkPhysicalDeviceMemoryProperties,
                                  width: Int, height: Int, format: Int, samples: Int) : VkImageBundle() {
     init {
         image = Image2DDeviceLocal(device, memoryProperties, width, height, format,

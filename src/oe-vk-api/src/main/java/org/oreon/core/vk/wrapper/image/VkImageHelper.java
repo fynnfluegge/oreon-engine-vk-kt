@@ -68,8 +68,8 @@ public class VkImageHelper {
 			String file, int usage, int finalLayout, int dstAccessMask, int dstStageMask,
 			int dstQueueFamilyIndex, boolean mipmap){
 		
-		ImageMetaData metaData = VkImageLoader.getImageMetaData(file);
-		ByteBuffer imageBuffer = VkImageLoader.decodeImage(file);
+		ImageMetaData metaData = VkImageLoader.INSTANCE.getImageMetaData(file);
+		ByteBuffer imageBuffer = VkImageLoader.INSTANCE.decodeImage(file);
 		
 		StagingBuffer stagingBuffer = new StagingBuffer(device, memoryProperties, imageBuffer);
 		
