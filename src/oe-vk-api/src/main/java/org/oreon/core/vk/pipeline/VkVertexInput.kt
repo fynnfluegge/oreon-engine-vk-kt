@@ -7,12 +7,11 @@ import org.lwjgl.vulkan.VkVertexInputBindingDescription
 import org.oreon.core.model.Vertex.VertexLayout
 
 class VkVertexInput(layout: VertexLayout?) {
-    @Getter
-    private var bindingDescription: VkVertexInputBindingDescription.Buffer? = null
 
-    @Getter
-    private var attributeDescriptions: VkVertexInputAttributeDescription.Buffer? = null
+    var bindingDescription: VkVertexInputBindingDescription.Buffer? = null
+    var attributeDescriptions: VkVertexInputAttributeDescription.Buffer? = null
     private var binding = 0
+    
     private fun createBindingDescription(binding: Int, attributeCount: Int, stride: Int) {
         this.binding = binding
         bindingDescription = VkVertexInputBindingDescription.calloc(1)

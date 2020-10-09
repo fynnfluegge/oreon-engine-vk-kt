@@ -1,6 +1,5 @@
 package org.oreon.core.vk.pipeline
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.*
 import org.oreon.core.vk.util.VkUtil
@@ -13,11 +12,10 @@ class RenderPass(private val device: VkDevice) {
     private val subpassDependendies: MutableList<VkSubpassDependency> = ArrayList()
     private val subpassDescriptions: MutableList<VkSubpassDescription> = ArrayList()
 
-    @Getter
-    private var handle: Long = 0
+    var handle: Long = 0
 
-    @Getter
-    private var attachmentCount = 0
+    var attachmentCount = 0
+
     fun createRenderPass() {
         val attachments = VkAttachmentDescription.calloc(attachmentDescriptions.size)
         for (attachment in attachmentDescriptions) {

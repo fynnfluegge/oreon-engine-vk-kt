@@ -9,11 +9,9 @@ import java.nio.LongBuffer
 import java.util.*
 
 open class VkPipeline(private val device: VkDevice) {
-    @Getter
-    private var handle: Long = 0
 
-    @Getter
-    private var layoutHandle: Long = 0
+    var handle: Long = 0
+    var layoutHandle: Long = 0
     private var vertexInputState: VkPipelineVertexInputStateCreateInfo? = null
     private var pushConstantRange: VkPushConstantRange.Buffer? = null
     private var inputAssembly: VkPipelineInputAssemblyStateCreateInfo? = null
@@ -29,6 +27,7 @@ open class VkPipeline(private val device: VkDevice) {
     private var scissor: VkRect2D.Buffer? = null
     private var pDynamicStates: IntBuffer? = null
     var colorBlendAttachments: MutableList<VkPipelineColorBlendAttachmentState> = ArrayList()
+
     fun createGraphicsPipeline(shaderPipeline: ShaderPipeline, renderPass: Long) {
         val pipelineCreateInfo = VkGraphicsPipelineCreateInfo.calloc(1)
                 .sType(VK10.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
@@ -126,8 +125,8 @@ open class VkPipeline(private val device: VkDevice) {
                 .minDepth(0.0f)
                 .maxDepth(1.0f)
         scissor = VkRect2D.calloc(1)
-        scissor.extent()[width] = height
-        scissor.offset()[0] = 0
+        scissor!!.extent()[width] = height
+        scissor!!.offset()[0] = 0
         viewportAndScissorState = VkPipelineViewportStateCreateInfo.calloc()
                 .sType(VK10.VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO)
                 .viewportCount(1)
@@ -174,9 +173,9 @@ open class VkPipeline(private val device: VkDevice) {
         colorBlendAttachmentStates = VkPipelineColorBlendAttachmentState.calloc(colorBlendAttachments.size)
         for (colorBlendAttachment in colorBlendAttachments) {
             colorBlendAttachment.blendEnable(false)
-            colorBlendAttachmentStates.put(colorBlendAttachment)
+            colorBlendAttachmentStates!!.put(colorBlendAttachment)
         }
-        colorBlendAttachmentStates.flip()
+        colorBlendAttachmentStates!!.flip()
         colorBlending = VkPipelineColorBlendStateCreateInfo.calloc()
                 .sType(VK10.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
                 .logicOpEnable(false)
@@ -200,9 +199,9 @@ open class VkPipeline(private val device: VkDevice) {
                     .alphaBlendOp(alphaBlendOp)
                     .colorWriteMask(VK10.VK_COLOR_COMPONENT_R_BIT or VK10.VK_COLOR_COMPONENT_G_BIT
                             or VK10.VK_COLOR_COMPONENT_B_BIT or VK10.VK_COLOR_COMPONENT_A_BIT)
-            colorBlendAttachmentStates.put(colorBlendAttachment)
+            colorBlendAttachmentStates!!.put(colorBlendAttachment)
         }
-        colorBlendAttachmentStates.flip()
+        colorBlendAttachmentStates!!.flip()
         colorBlending = VkPipelineColorBlendStateCreateInfo.calloc()
                 .sType(VK10.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
                 .logicOpEnable(false)
@@ -220,18 +219,18 @@ open class VkPipeline(private val device: VkDevice) {
                 .depthCompareOp(VK10.VK_COMPARE_OP_LESS)
                 .depthBoundsTestEnable(false)
                 .stencilTestEnable(false)
-        depthStencilState.back()
+        depthStencilState!!.back()
                 .failOp(VK10.VK_STENCIL_OP_KEEP)
                 .passOp(VK10.VK_STENCIL_OP_KEEP)
                 .compareOp(VK10.VK_COMPARE_OP_ALWAYS)
-        depthStencilState.front(depthStencilState.back())
+        depthStencilState!!.front(depthStencilState!!.back())
     }
 
     fun setDynamicState() {
         pDynamicStates = MemoryUtil.memAllocInt(2)
-        pDynamicStates.put(VK10.VK_DYNAMIC_STATE_VIEWPORT)
-        pDynamicStates.put(VK10.VK_DYNAMIC_STATE_SCISSOR)
-        pDynamicStates.flip()
+        pDynamicStates!!.put(VK10.VK_DYNAMIC_STATE_VIEWPORT)
+        pDynamicStates!!.put(VK10.VK_DYNAMIC_STATE_SCISSOR)
+        pDynamicStates!!.flip()
         dynamicState = VkPipelineDynamicStateCreateInfo.calloc()
                 .sType(VK10.VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO)
                 .pDynamicStates(pDynamicStates)

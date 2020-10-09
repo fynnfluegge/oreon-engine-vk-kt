@@ -1,6 +1,5 @@
 package org.oreon.core.vk.memory
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.*
 import org.oreon.core.vk.device.DeviceCapabilities.getMemoryTypeIndex
@@ -8,11 +7,9 @@ import org.oreon.core.vk.util.VkUtil
 import java.nio.ByteBuffer
 
 open class VkBuffer(private val device: VkDevice, size: Int, usage: Int) {
-    @Getter
-    private val handle: Long
 
-    @Getter
-    private var memory: Long = 0
+    val handle: Long
+    var memory: Long = 0
     private var allocationSize: Long = 0
     fun allocate(memoryProperties: VkPhysicalDeviceMemoryProperties?,
                  memoryPropertyFlags: Int) {

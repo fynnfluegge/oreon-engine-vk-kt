@@ -1,21 +1,21 @@
 package org.oreon.core.vk.pipeline
 
-import lombok.Getter
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDevice
 import org.lwjgl.vulkan.VkPipelineShaderStageCreateInfo
 import java.util.*
 
 class ShaderPipeline(private val device: VkDevice) {
-    @Getter
-    private var stages: VkPipelineShaderStageCreateInfo.Buffer? = null
+
+    var stages: VkPipelineShaderStageCreateInfo.Buffer? = null
     private val shaderStages: MutableList<ShaderModule> = ArrayList()
+
     fun createShaderPipeline() {
         stages = VkPipelineShaderStageCreateInfo.calloc(shaderStages.size)
         for (shaderStage in shaderStages) {
-            stages.put(shaderStage.shaderStageInfo)
+            stages!!.put(shaderStage.shaderStageInfo)
         }
-        stages.flip()
+        stages!!.flip()
     }
 
     fun createVertexShader(filePath: String?) {

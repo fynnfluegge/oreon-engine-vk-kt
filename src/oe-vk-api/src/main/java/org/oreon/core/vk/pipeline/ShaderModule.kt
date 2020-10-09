@@ -1,6 +1,5 @@
 package org.oreon.core.vk.pipeline
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDevice
@@ -12,11 +11,11 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 open class ShaderModule(private val device: VkDevice, filePath: String, stage: Int) {
-    @Getter
-    private var shaderStageInfo: VkPipelineShaderStageCreateInfo? = null
 
-    @Getter
-    private var handle: Long = 0
+    var shaderStageInfo: VkPipelineShaderStageCreateInfo? = null
+
+    var handle: Long = 0
+
     private fun createShaderModule(filePath: String) {
         var shaderCode: ByteBuffer? = null
         try {
