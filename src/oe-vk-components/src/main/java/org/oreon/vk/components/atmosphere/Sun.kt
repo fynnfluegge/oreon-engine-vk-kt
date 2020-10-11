@@ -136,9 +136,8 @@ class Sun : Renderable() {
                 VkUtil.createLongArray(descriptorSets),
                 vertexBufferObject.handle, 1,
                 pushConstants, VK10.VK_SHADER_STAGE_VERTEX_BIT)
-        val meshData = VkMeshData.builder().vertexBufferObject(vertexBufferObject)
-                .vertexBuffer(vertexBuffer).build()
 
+        val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject)
         val mainRenderInfo = VkRenderInfo(commandBuffer = mainCommandBuffer, pipeline = graphicsPipeline,
                 descriptorSets = descriptorSets, descriptorSetLayouts = descriptorSetLayouts)
         addComponent(NodeComponentType.MESH_DATA, meshData)

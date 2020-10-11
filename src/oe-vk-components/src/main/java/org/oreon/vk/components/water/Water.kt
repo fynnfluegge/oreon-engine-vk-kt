@@ -452,7 +452,7 @@ class Water : Renderable() {
         offScreenRefractionSubmitInfo = SubmitInfo()
         offScreenRefractionSubmitInfo.setCommandBuffers(offscreenRefractionCmdBuffer.handlePointer)
         offScreenRefractionSubmitInfo.fence = refractionFence
-        val meshData = VkMeshData.builder().vertexBufferObject(vertexBufferObject).vertexBuffer(vertexBuffer).build()
+        val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject)
         val mainRenderInfo = VkRenderInfo(commandBuffer = graphicsCommandBuffer, descriptorSets = descriptorSets,
             descriptorSetLayouts = descriptorSetLayouts, pipeline = graphicsPipeline)
         val wireframeRenderInfo = VkRenderInfo(commandBuffer = wireframeCommandBuffer, descriptorSets = descriptorSets,

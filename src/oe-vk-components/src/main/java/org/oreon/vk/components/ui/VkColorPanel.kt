@@ -61,8 +61,8 @@ class VkColorPanel(rgba: Vec4f, xPos: Int, yPos: Int, xScaling: Int, yScaling: I
                 fbo.renderPass!!.handle,
                 0,
                 null,
-                panelMeshBuffer.vertexBufferObject.handle,
-                panelMeshBuffer.indexBufferObject.handle,
+                panelMeshBuffer.vertexBufferObject!!.handle,
+                panelMeshBuffer.indexBufferObject!!.handle,
                 panelMeshBuffer.indexCount,
                 pushConstants,
                 VK10.VK_SHADER_STAGE_FRAGMENT_BIT or VK10.VK_SHADER_STAGE_VERTEX_BIT)

@@ -97,8 +97,8 @@ class VkTexturePanel(imageFile: String?, xPos: Int, yPos: Int, xScaling: Int, yS
                 fbo.renderPass!!.handle,
                 0,
                 VkUtil.createLongArray(descriptorSets),
-                panelMeshBuffer.vertexBufferObject.handle,
-                panelMeshBuffer.indexBufferObject.handle,
+                panelMeshBuffer.vertexBufferObject!!.handle,
+                panelMeshBuffer.indexBufferObject!!.handle,
                 panelMeshBuffer.indexCount,
                 pushConstants,
                 VK10.VK_SHADER_STAGE_VERTEX_BIT)

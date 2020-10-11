@@ -39,8 +39,7 @@ class Planet : Node() {
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
                 device.transferQueue,
                 vertexBuffer, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-        val meshData = VkMeshData.builder().vertexBufferObject(vertexBufferObject)
-                .vertexBuffer(vertexBuffer).vertexCount(mesh.size).build()
+        val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject, vertexCount = mesh.size)
         val components = HashMap<NodeComponentType, NodeComponent>()
         val config = QuadtreeConfig()
         val vertexInput = VkVertexInput(VertexLayout.POS2D)

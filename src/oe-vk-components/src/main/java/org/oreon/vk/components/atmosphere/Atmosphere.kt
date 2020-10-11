@@ -124,9 +124,8 @@ class Atmosphere : Renderable() {
                 indexBufferObject.handle,
                 mesh.indices.size,
                 pushConstants, VK10.VK_SHADER_STAGE_FRAGMENT_BIT)
-        val meshData = VkMeshData.builder().vertexBufferObject(vertexBufferObject)
-                .vertexBuffer(vertexBuffer).indexBufferObject(indexBufferObject).indexBuffer(indexBuffer)
-                .build()
+        val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject,
+            indexBuffer = indexBuffer, indexBufferObject = indexBufferObject)
         val mainRenderInfo = VkRenderInfo(commandBuffer = mainCommandBuffer, pipeline = graphicsPipeline,
                 descriptorSets = descriptorSets, descriptorSetLayouts = descriptorSetLayouts)
         addComponent(NodeComponentType.MESH_DATA, meshData)
