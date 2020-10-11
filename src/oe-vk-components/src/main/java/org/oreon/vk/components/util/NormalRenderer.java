@@ -60,9 +60,8 @@ public class NormalRenderer {
 	private VkQueue computeQueue;
 	private VkQueue transferQueue;
 	private CommandPool graphicsCommandPool;
-	
-	@Getter
-	private VkImageView normalImageView;
+
+	public VkImageView normalImageView;
 	private int N;
 	
 	public NormalRenderer(VkDeviceBundle deviceBundle, int n, float strength,

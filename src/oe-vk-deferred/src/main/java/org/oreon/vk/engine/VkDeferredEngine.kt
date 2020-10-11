@@ -211,7 +211,7 @@ class VkDeferredEngine : RenderEngine() {
                 if (!offScreenSecondaryCmdBuffers!!.containsKey(key)) {
                     val mainRenderInfo: VkRenderInfo? = offScreenRenderList!![key]
                             ?.getComponent(NodeComponentType.MAIN_RENDERINFO)
-                    if (mainRenderInfo != null) offScreenSecondaryCmdBuffers!![key] = mainRenderInfo.commandBuffer
+                    if (mainRenderInfo != null) offScreenSecondaryCmdBuffers!![key] = mainRenderInfo.commandBuffer!!
                 }
             })
 
@@ -237,7 +237,7 @@ class VkDeferredEngine : RenderEngine() {
                 if (!transparencySecondaryCmdBuffers!!.containsKey(key)) {
                     val mainRenderInfo: VkRenderInfo? = transparencyRenderList!![key]
                             ?.getComponent(NodeComponentType.MAIN_RENDERINFO)
-                    transparencySecondaryCmdBuffers!![key] = mainRenderInfo!!.commandBuffer
+                    transparencySecondaryCmdBuffers!![key] = mainRenderInfo!!.commandBuffer!!
                 }
             })
 

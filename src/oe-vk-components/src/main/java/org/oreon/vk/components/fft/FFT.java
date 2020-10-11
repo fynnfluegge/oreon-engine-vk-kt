@@ -44,12 +44,9 @@ public class FFT {
 	
 	private VkQueue computeQueue;
 
-	@Getter
-	private VkImageView dxImageView;
-	@Getter
-	private VkImageView dyImageView;
-	@Getter
-	private VkImageView dzImageView;
+	public VkImageView dxImageView;
+	public VkImageView dyImageView;
+	public VkImageView dzImageView;
 	
 	private VkImage dxImage;
 	private VkImage dyImage;
@@ -89,8 +86,7 @@ public class FFT {
 	private CommandBuffer fftCommandBuffer;
 	private SubmitInfo fftSubmitInfo;
 
-	@Getter
-	private VkSemaphore fftSignalSemaphore;
+	public VkSemaphore fftSignalSemaphore;
 	
 	public FFT(VkDeviceBundle deviceBundle, int N, int L, float t_delta,
 			float amplitude, Vec2f direction, float intensity, float capillarSupressFactor) {

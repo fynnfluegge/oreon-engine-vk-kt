@@ -11,7 +11,7 @@ class VkVertexInput(layout: VertexLayout?) {
     var bindingDescription: VkVertexInputBindingDescription.Buffer? = null
     var attributeDescriptions: VkVertexInputAttributeDescription.Buffer? = null
     private var binding = 0
-    
+
     private fun createBindingDescription(binding: Int, attributeCount: Int, stride: Int) {
         this.binding = binding
         bindingDescription = VkVertexInputBindingDescription.calloc(1)
