@@ -1,6 +1,5 @@
 package org.oreon.vk.components.fft
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDevice
@@ -25,19 +24,12 @@ import org.oreon.core.vk.wrapper.image.Image2DDeviceLocal
 
 class Hkt(deviceBundle: VkDeviceBundle, N: Int, L: Int, private val t_delta: Float,
           tilde_h0k: VkImageView, tilde_h0minusk: VkImageView) {
+
     private val queue: VkQueue?
-
-    @Getter
-    private val dxCoefficients_imageView: VkImageView
-
-    @Getter
-    private val dyCoefficients_imageView: VkImageView
-
-    @Getter
-    private val dzCoefficients_imageView: VkImageView
-
-    @Getter
-    private val signalSemaphore: VkSemaphore
+    val dxCoefficients_imageView: VkImageView
+    val dyCoefficients_imageView: VkImageView
+    val dzCoefficients_imageView: VkImageView
+    val signalSemaphore: VkSemaphore
     private var t = 0f
     private var systemTime = System.currentTimeMillis()
     private val image_dxCoefficients: VkImage
@@ -48,45 +40,6 @@ class Hkt(deviceBundle: VkDeviceBundle, N: Int, L: Int, private val t_delta: Flo
     private val buffer: VkUniformBuffer
     private val commandBuffer: CommandBuffer
     private val submitInfo: SubmitInfo
-
-    private inner class CoefficientsDescriptor(device: VkDevice?, descriptorPool: DescriptorPool?,
-                                               tilde_h0k: VkImageView, tilde_h0minusk: VkImageView) : VkDescriptor() {
-        init {
-            descriptorSetLayout = DescriptorSetLayout(device!!, 6)
-            descriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.create()
-            descriptorSet = DescriptorSet(device, descriptorPool!!.handle,
-                    descriptorSetLayout.handlePointer)
-            descriptorSet.updateDescriptorImageBuffer(dyCoefficients_imageView.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
-                    0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(dxCoefficients_imageView.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
-                    1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(dzCoefficients_imageView.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
-                    2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(tilde_h0k.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
-                    3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(tilde_h0minusk.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
-                    4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorBuffer(buffer.handle,
-                    java.lang.Float.BYTES * 1.toLong(), 0, 5, VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-        }
-    }
 
     fun render() {
         t += (System.currentTimeMillis() - systemTime) * t_delta
@@ -152,5 +105,45 @@ class Hkt(deviceBundle: VkDeviceBundle, N: Int, L: Int, private val t_delta: Flo
         submitInfo = SubmitInfo()
         submitInfo.setCommandBuffers(commandBuffer.handlePointer)
         submitInfo.setSignalSemaphores(signalSemaphore.handlePointer)
+    }
+
+    private inner class CoefficientsDescriptor(device: VkDevice?, descriptorPool: DescriptorPool?,
+                                               tilde_h0k: VkImageView, tilde_h0minusk: VkImageView) : VkDescriptor() {
+        init {
+            descriptorSetLayout = DescriptorSetLayout(device!!, 6)
+            descriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.create()
+
+            descriptorSet = DescriptorSet(device, descriptorPool!!.handle,
+                    descriptorSetLayout.handlePointer)
+            descriptorSet.updateDescriptorImageBuffer(dyCoefficients_imageView.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
+                    0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(dxCoefficients_imageView.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
+                    1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(dzCoefficients_imageView.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
+                    2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(tilde_h0k.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
+                    3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(tilde_h0minusk.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1,
+                    4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorBuffer(buffer.handle,
+                    java.lang.Float.BYTES * 1.toLong(), 0, 5, VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+        }
     }
 }

@@ -9,7 +9,7 @@ class VkResources {
     var reflectionFbo: VkFrameBufferObject? = null
     var refractionFbo: VkFrameBufferObject? = null
     var transparencyFbo: VkFrameBufferObject? = null
-    val descriptors: Map<VkDescriptorName, VkDescriptor> = HashMap()
+    val descriptors: HashMap<VkDescriptorName, VkDescriptor> = HashMap()
 
     enum class VkDescriptorName {
         CAMERA, DIRECTIONAL_LIGHT

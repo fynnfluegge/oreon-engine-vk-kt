@@ -1,6 +1,5 @@
 package org.oreon.core.vk.scenegraph
 
-import lombok.Getter
 import org.lwjgl.vulkan.VK10
 import org.oreon.core.math.Vec3f
 import org.oreon.core.scenegraph.Camera
@@ -14,12 +13,11 @@ import org.oreon.core.vk.descriptor.DescriptorSetLayout
 import org.oreon.core.vk.wrapper.buffer.VkUniformBuffer
 import org.oreon.core.vk.wrapper.descriptor.VkDescriptor
 
-@Getter
-class VkCamera : Camera(Vec3f(-160, 45, -72), Vec3f(0.5668308f, -0.028192917f, 0.82335174f),
+class VkCamera : Camera(Vec3f(-160f, 45f, -72f), Vec3f(0.5668308f, -0.028192917f, 0.82335174f),
         Vec3f(0.015936304f, 0.9996025f, 0.023256794f)) {
     private var uniformBuffer: VkUniformBuffer? = null
-    private var descriptorSet: DescriptorSet? = null
-    private var descriptorSetLayout: DescriptorSetLayout? = null
+    lateinit var descriptorSet: DescriptorSet
+    lateinit var descriptorSetLayout: DescriptorSetLayout
     override fun init() {
         val device = deviceManager.getLogicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE).handle
         uniformBuffer = VkUniformBuffer(
@@ -32,10 +30,10 @@ class VkCamera : Camera(Vec3f(-160, 45, -72), Vec3f(0.5668308f, -0.028192917f, 0
         descriptorSet = DescriptorSet(device,
                 deviceManager.getLogicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE)
                         .getDescriptorPool(Thread.currentThread().id)!!.handle,
-                descriptorSetLayout!!.handlePointer)
+                descriptorSetLayout.handlePointer)
         descriptorSet!!.updateDescriptorBuffer(uniformBuffer!!.handle, bufferSize.toLong(), 0, 0,
                 VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-        resources.descriptors.put(VkDescriptorName.CAMERA, VkDescriptor(descriptorSet, descriptorSetLayout))
+        resources.descriptors[VkDescriptorName.CAMERA] = VkDescriptor(descriptorSet, descriptorSetLayout)
     }
 
     override fun update() {

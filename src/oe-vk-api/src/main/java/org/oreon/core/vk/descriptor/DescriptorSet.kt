@@ -5,7 +5,7 @@ import org.lwjgl.vulkan.*
 import org.oreon.core.vk.util.VkUtil
 import java.nio.LongBuffer
 
-open class DescriptorSet(private val device: VkDevice, private val descriptorPool: Long, layouts: LongBuffer?) {
+open class DescriptorSet(private val device: VkDevice, private val descriptorPool: Long, private val layouts: LongBuffer) {
 
     var handle: Long
     fun updateDescriptorBuffer(buffer: Long, range: Long, offset: Long,

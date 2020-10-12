@@ -1,6 +1,5 @@
 package org.oreon.vk.components.fft
 
-import lombok.Getter
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
 import org.lwjgl.vulkan.VkDevice
@@ -24,48 +23,11 @@ import org.oreon.core.vk.wrapper.shader.ComputeShader
 
 class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
           amplitude: Float, windDirection: Vec2f, windSpeed: Float, capillarSuppressFactor: Float) {
-    @Getter
-    private val h0k_imageView: VkImageView
 
-    @Getter
-    private val h0minusk_imageView: VkImageView
+    val h0k_imageView: VkImageView
+    val h0minusk_imageView: VkImageView
     private val h0k_image: VkImage
     private val h0minusk_image: VkImage
-
-    private inner class SpectrumDescriptor(device: VkDevice?, descriptorPool: DescriptorPool?,
-                                           noise0: VkImageView, noise1: VkImageView,
-                                           noise2: VkImageView, noise3: VkImageView) : VkDescriptor() {
-        init {
-            descriptorSetLayout = DescriptorSetLayout(device!!, 6)
-            descriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-            descriptorSetLayout.create()
-            descriptorSet = DescriptorSet(device, descriptorPool!!.handle,
-                    descriptorSetLayout.handlePointer)
-            descriptorSet.updateDescriptorImageBuffer(h0k_imageView.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(h0minusk_imageView.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(noise0.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(noise1.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(noise2.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-            descriptorSet.updateDescriptorImageBuffer(noise3.handle,
-                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 5, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        }
-    }
 
     fun destroy() {
         h0k_image.destroy()
@@ -176,5 +138,41 @@ class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
         noise1ImageView.destroy()
         noise2ImageView.destroy()
         noise3ImageView.destroy()
+    }
+
+    private inner class SpectrumDescriptor(device: VkDevice?, descriptorPool: DescriptorPool?,
+                                           noise0: VkImageView, noise1: VkImageView,
+                                           noise2: VkImageView, noise3: VkImageView) : VkDescriptor() {
+        init {
+            descriptorSetLayout = DescriptorSetLayout(device!!, 6)
+            descriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                    VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+            descriptorSetLayout.create()
+
+            descriptorSet = DescriptorSet(device, descriptorPool!!.handle,
+                    descriptorSetLayout.handlePointer)
+            descriptorSet.updateDescriptorImageBuffer(h0k_imageView.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(h0minusk_imageView.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(noise0.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(noise1.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(noise2.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+            descriptorSet.updateDescriptorImageBuffer(noise3.handle,
+                    VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 5, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        }
     }
 }

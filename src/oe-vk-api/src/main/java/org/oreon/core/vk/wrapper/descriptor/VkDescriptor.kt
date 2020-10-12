@@ -1,19 +1,21 @@
 package org.oreon.core.vk.wrapper.descriptor
 
-import lombok.AllArgsConstructor
-import lombok.Getter
-import lombok.NoArgsConstructor
 import org.oreon.core.vk.descriptor.DescriptorSet
 import org.oreon.core.vk.descriptor.DescriptorSetLayout
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-open class VkDescriptor {
-    protected var descriptorSet: DescriptorSet? = null
-    protected var descriptorSetLayout: DescriptorSetLayout? = null
+open class VkDescriptor() {
+
+    lateinit var descriptorSet: DescriptorSet
+    lateinit var descriptorSetLayout: DescriptorSetLayout
+
+    constructor(descriptorSet: DescriptorSet,
+                descriptorSetLayout: DescriptorSetLayout) : this(){
+        this.descriptorSet = descriptorSet
+        this.descriptorSetLayout = descriptorSetLayout
+    }
+
     fun destroy() {
-        descriptorSet!!.destroy()
-        descriptorSetLayout!!.destroy()
+        descriptorSet.destroy()
+        descriptorSetLayout.destroy()
     }
 }
