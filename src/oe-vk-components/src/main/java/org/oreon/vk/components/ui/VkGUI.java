@@ -127,7 +127,7 @@ public class VkGUI extends GUI{
 		guiSubmitInfo.setCommandBuffers(guiPrimaryCmdBuffer.getHandlePointer());
 		guiSubmitInfo.setWaitSemaphores(waitSemaphores);
 		guiSubmitInfo.setWaitDstStageMask(pWaitDstStageMask);
-		guiSubmitInfo.setSignalSemaphores(signalSemaphore.getHandlePointer());
+		guiSubmitInfo.setSignalSemaphores(signalSemaphore.handlePointer);
 		
 		// fonts Image 
 		VkImage fontsImage = VkImageHelper.loadImageFromFile(

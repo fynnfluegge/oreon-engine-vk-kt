@@ -15,11 +15,9 @@ import org.oreon.core.vk.util.VkUtil;
 import lombok.Getter;
 
 public class VkSemaphore {
-	
-	@Getter
-	private long handle;
-	@Getter
-	private LongBuffer handlePointer;
+
+	public long handle;
+	public LongBuffer handlePointer;
 	
 	private VkDevice device;
 

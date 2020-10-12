@@ -237,9 +237,9 @@ public class FFT {
 		pWaitDstStageMask.put(0, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 		fftSubmitInfo = new SubmitInfo();
 		fftSubmitInfo.setCommandBuffers(fftCommandBuffer.getHandlePointer());
-		fftSubmitInfo.setWaitSemaphores(hkt.getSignalSemaphore().getHandlePointer());
+		fftSubmitInfo.setWaitSemaphores(hkt.getSignalSemaphore().handlePointer);
 		fftSubmitInfo.setWaitDstStageMask(pWaitDstStageMask);
-		fftSubmitInfo.setSignalSemaphores(fftSignalSemaphore.getHandlePointer());
+		fftSubmitInfo.setSignalSemaphores(fftSignalSemaphore.handlePointer);
 	}
 	
 	public void record(VkDeviceBundle deviceBundle, int N, int stages){

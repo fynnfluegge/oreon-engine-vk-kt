@@ -200,7 +200,7 @@ public class OpaqueTransparencyBlending {
 		submitInfo.setCommandBuffers(cmdBuffer.getHandlePointer());
 		submitInfo.setWaitSemaphores(waitSemaphores);
 		submitInfo.setWaitDstStageMask(pWaitDstStageMask);
-		submitInfo.setSignalSemaphores(signalSemaphore.getHandlePointer());
+		submitInfo.setSignalSemaphores(signalSemaphore.handlePointer);
 		
 		shader.destroy();
 	}
