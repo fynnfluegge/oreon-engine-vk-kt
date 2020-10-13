@@ -126,7 +126,7 @@ public class SSAO {
 		pushConstants.putFloat(height);
 		pushConstants.flip();
 		
-		kernelBuffer = VkBufferHelper.createDeviceLocalBuffer(device, memoryProperties,
+		kernelBuffer = VkBufferHelper.INSTANCE.createDeviceLocalBuffer(device, memoryProperties,
         		deviceBundle.getLogicalDevice().getTransferCommandPool(Thread.currentThread().getId()).getHandle(),
         		deviceBundle.getLogicalDevice().getTransferQueue(),
         		BufferUtil.createByteBuffer(kernel),

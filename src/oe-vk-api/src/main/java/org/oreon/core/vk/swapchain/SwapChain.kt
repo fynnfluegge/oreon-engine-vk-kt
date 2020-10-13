@@ -52,7 +52,7 @@ class SwapChain(logicalDevice: LogicalDevice,
     private var pipeline: VkPipeline? = null
     private var renderPass: RenderPass? = null
     private var sampler: VkSampler? = null
-    private var descriptorSet: DescriptorSet? = null
+    private lateinit var descriptorSet: DescriptorSet
     private var descriptorSetLayout: DescriptorSetLayout? = null
     private val device: VkDevice
     private val UINT64_MAX = -0x1L
@@ -143,7 +143,7 @@ class SwapChain(logicalDevice: LogicalDevice,
 
     fun createRenderCommandBuffers(commandPool: Long, renderPass: Long,
                                    vertexBuffer: Long, indexBuffer: Long, indexCount: Int,
-                                   descriptorSets: LongArray?) {
+                                   descriptorSets: LongArray) {
         renderCommandBuffers = ArrayList<CommandBuffer>()
         for (frameBuffer in frameBuffers!!) {
             val commandBuffer: CommandBuffer = DrawCmdBuffer(
@@ -271,7 +271,7 @@ class SwapChain(logicalDevice: LogicalDevice,
                 vertexBufferObject.handle,
                 indexBufferObject.handle,
                 fullScreenQuad.indices.size,
-                descriptorSet?.let { VkUtil.createLongArray(it) })
+                VkUtil.createLongArray(descriptorSet))
         drawFence = Fence(device)
         submitInfo = SubmitInfo()
         submitInfo.setSignalSemaphores(renderCompleteSemaphore.handlePointer)
