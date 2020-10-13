@@ -21,8 +21,7 @@ class VkMeshData(val device: VkDevice? = null, val memoryProperties: VkPhysicalD
 
     var indexCount: Int = 0
 
-    constructor(device: VkDevice, memoryProperties: VkPhysicalDeviceMemoryProperties,
-                commandPool: CommandPool, queue: VkQueue, mesh: Mesh, vertexLayout: VertexLayout): this() {
+    fun create() {
 
         val vertexByteBuffer = BufferUtil.createByteBuffer(mesh?.vertices, vertexLayout)
         val indexByteBuffer = BufferUtil.createByteBuffer(*mesh!!.indices)

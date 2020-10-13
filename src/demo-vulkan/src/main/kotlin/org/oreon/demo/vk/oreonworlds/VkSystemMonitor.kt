@@ -11,7 +11,7 @@ import java.nio.LongBuffer
 
 class VkSystemMonitor : VkGUI() {
     private var bean: OperatingSystemMXBean? = null
-    override fun init(imageView: VkImageView, waitSemaphores: LongBuffer) {
+    override fun init(imageView: VkImageView, waitSemaphores: LongBuffer?){
         super.init(imageView, waitSemaphores)
         bean = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
         val screen0 = UIScreen()
