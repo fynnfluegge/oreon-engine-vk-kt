@@ -182,13 +182,13 @@ public class OpaqueTransparencyBlending {
 		
 		computePipeline = new VkPipeline(device);
 		computePipeline.setPushConstantsRange(VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange);
-		computePipeline.setLayout(VkUtil.createLongBuffer(descriptorSetLayouts));
+		computePipeline.setLayout(VkUtil.INSTANCE.createLongBuffer(descriptorSetLayouts));
 		computePipeline.createComputePipeline(shader);
 
 		cmdBuffer = new ComputeCmdBuffer(device,
 				deviceBundle.getLogicalDevice().getComputeCommandPool(Thread.currentThread().getId()).getHandle(),
 				computePipeline.getHandle(), computePipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSets), width/16, height/16, 1,
+				VkUtil.INSTANCE.createLongArray(descriptorSets), width/16, height/16, 1,
 				pushConstants, VK_SHADER_STAGE_COMPUTE_BIT);
 		
 		signalSemaphore = new VkSemaphore(device);
@@ -200,7 +200,7 @@ public class OpaqueTransparencyBlending {
 		submitInfo.setCommandBuffers(cmdBuffer.getHandlePointer());
 		submitInfo.setWaitSemaphores(waitSemaphores);
 		submitInfo.setWaitDstStageMask(pWaitDstStageMask);
-		submitInfo.setSignalSemaphores(signalSemaphore.handlePointer);
+		submitInfo.setSignalSemaphores(signalSemaphore.getHandlePointer());
 		
 		shader.destroy();
 	}

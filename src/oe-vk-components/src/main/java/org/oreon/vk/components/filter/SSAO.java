@@ -178,13 +178,13 @@ public class SSAO {
 		
 		ssaoPipeline = new VkPipeline(device);
 		ssaoPipeline.setPushConstantsRange(VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange);
-		ssaoPipeline.setLayout(VkUtil.createLongBuffer(descriptorSetLayouts));
+		ssaoPipeline.setLayout(VkUtil.INSTANCE.createLongBuffer(descriptorSetLayouts));
 		ssaoPipeline.createComputePipeline(new ComputeShader(device, "shaders/filter/ssao/ssao.comp.spv"));
 		
 		ssaoCmdBuffer = new ComputeCmdBuffer(device,
 				deviceBundle.getLogicalDevice().getComputeCommandPool(Thread.currentThread().getId()).getHandle(),
 				ssaoPipeline.getHandle(), ssaoPipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSets), width/16, height/16, 1,
+				VkUtil.INSTANCE.createLongArray(descriptorSets), width/16, height/16, 1,
 				pushConstants, VK_SHADER_STAGE_COMPUTE_BIT);
 		
 		fence = new Fence(device);
@@ -223,13 +223,13 @@ public class SSAO {
 		descriptorSetLayouts.add(ssaoBlurDescriptorSetLayout);
 		
 		ssaoBlurPipeline = new VkPipeline(device);
-		ssaoBlurPipeline.setLayout(VkUtil.createLongBuffer(descriptorSetLayouts));
+		ssaoBlurPipeline.setLayout(VkUtil.INSTANCE.createLongBuffer(descriptorSetLayouts));
 		ssaoBlurPipeline.createComputePipeline(new ComputeShader(device, "shaders/filter/ssao/ssaoBlur.comp.spv"));
 		
 		ssaoBlurCmdBuffer = new ComputeCmdBuffer(device,
 				deviceBundle.getLogicalDevice().getComputeCommandPool(Thread.currentThread().getId()).getHandle(),
 				ssaoBlurPipeline.getHandle(), ssaoBlurPipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSets), width/16, height/16, 1);
+				VkUtil.INSTANCE.createLongArray(descriptorSets), width/16, height/16, 1);
 		
 		fence = new Fence(device);
 		
@@ -276,7 +276,7 @@ public class SSAO {
 		CommandBuffer commandBuffer = new ComputeCmdBuffer(device,
 				commandPool.getHandle(),
 				pipeline.getHandle(), pipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSet), 1, 1, 1,
+				VkUtil.INSTANCE.createLongArray(descriptorSet), 1, 1, 1,
 				pushConstants, VK_SHADER_STAGE_COMPUTE_BIT);
 		
 		Fence fence = new Fence(device);

@@ -237,9 +237,9 @@ public class FFT {
 		pWaitDstStageMask.put(0, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 		fftSubmitInfo = new SubmitInfo();
 		fftSubmitInfo.setCommandBuffers(fftCommandBuffer.getHandlePointer());
-		fftSubmitInfo.setWaitSemaphores(hkt.getSignalSemaphore().handlePointer);
+		fftSubmitInfo.setWaitSemaphores(hkt.getSignalSemaphore().getHandlePointer());
 		fftSubmitInfo.setWaitDstStageMask(pWaitDstStageMask);
-		fftSubmitInfo.setSignalSemaphores(fftSignalSemaphore.handlePointer);
+		fftSubmitInfo.setSignalSemaphores(fftSignalSemaphore.getHandlePointer());
 	}
 	
 	public void record(VkDeviceBundle deviceBundle, int N, int stages){
@@ -259,21 +259,21 @@ public class FFT {
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, horizontalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dyButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dyButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			// dx
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, horizontalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dxButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dxButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			// dz
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, horizontalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dzButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dzButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			fftCommandBuffer.pipelineMemoryBarrierCmd(
@@ -289,21 +289,21 @@ public class FFT {
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, verticalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dyButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dyButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			// dx
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, verticalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dxButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dxButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			// dz
 			fftCommandBuffer.pushConstantsCmd(butterflyPipeline.getLayoutHandle(),
 					VK_SHADER_STAGE_COMPUTE_BIT, verticalPushConstants[i]);
 			fftCommandBuffer.bindComputeDescriptorSetsCmd(butterflyPipeline.getLayoutHandle(),
-					VkUtil.createLongArray(dzButterflyDescriptorSet));
+					VkUtil.INSTANCE.createLongArray(dzButterflyDescriptorSet));
 			fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 			
 			fftCommandBuffer.pipelineMemoryBarrierCmd(
@@ -318,17 +318,17 @@ public class FFT {
 				VK_SHADER_STAGE_COMPUTE_BIT, inversionPushConstants);
 		// dy
 		fftCommandBuffer.bindComputeDescriptorSetsCmd(inversionPipeline.getLayoutHandle(),
-				VkUtil.createLongArray(dyInversionDescriptorSet));
+				VkUtil.INSTANCE.createLongArray(dyInversionDescriptorSet));
 		fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 		
 		// dx
 		fftCommandBuffer.bindComputeDescriptorSetsCmd(inversionPipeline.getLayoutHandle(),
-				VkUtil.createLongArray(dxInversionDescriptorSet));
+				VkUtil.INSTANCE.createLongArray(dxInversionDescriptorSet));
 		fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 		
 		// dz
 		fftCommandBuffer.bindComputeDescriptorSetsCmd(inversionPipeline.getLayoutHandle(),
-				VkUtil.createLongArray(dzInversionDescriptorSet));
+				VkUtil.INSTANCE.createLongArray(dzInversionDescriptorSet));
 		fftCommandBuffer.dispatchCmd(N/16, N/16, 1);
 		
 		fftCommandBuffer.finishRecord();

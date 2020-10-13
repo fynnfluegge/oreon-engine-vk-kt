@@ -67,7 +67,7 @@ public class TerrainChunk extends QuadtreeNode{
 		
 		VkPipeline graphicsPipeline = new GraphicsTessellationPipeline(device.getHandle(),
 				renderInfo.getShaderPipeline(), renderInfo.getVertexInput(),
-				VkUtil.createLongBuffer(renderInfo.getDescriptorSetLayouts()),
+				VkUtil.INSTANCE.createLongBuffer(renderInfo.getDescriptorSetLayouts()),
 				BaseContext.Companion.getConfig().getFrameWidth(),
 				BaseContext.Companion.getConfig().getFrameHeight(),
 				VkContext.INSTANCE.getResources().getOffScreenFbo().getRenderPass().getHandle(),
@@ -83,7 +83,7 @@ public class TerrainChunk extends QuadtreeNode{
 	    		VkContext.INSTANCE.getResources().getOffScreenFbo().getFrameBuffer().getHandle(),
 	    		VkContext.INSTANCE.getResources().getOffScreenFbo().getRenderPass().getHandle(),
 	    		0,
-	    		VkUtil.createLongArray(renderInfo.getDescriptorSets()),
+	    		VkUtil.INSTANCE.createLongArray(renderInfo.getDescriptorSets()),
 	    		meshData.getVertexBufferObject().getHandle(),
 	    		meshData.getVertexCount(),
 	    		pushConstants, VK_SHADER_STAGE_ALL_GRAPHICS);

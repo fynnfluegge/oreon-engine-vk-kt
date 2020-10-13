@@ -271,7 +271,7 @@ class SwapChain(logicalDevice: LogicalDevice,
                 vertexBufferObject.handle,
                 indexBufferObject.handle,
                 fullScreenQuad.indices.size,
-                VkUtil.createLongArray(descriptorSet))
+                descriptorSet?.let { VkUtil.createLongArray(it) })
         drawFence = Fence(device)
         submitInfo = SubmitInfo()
         submitInfo.setSignalSemaphores(renderCompleteSemaphore.handlePointer)

@@ -42,17 +42,18 @@ object Util {
         return vertices
     }
 
-    fun toVertexArray(data: List<Vertex>): Array<Vertex?> {
-        val vertices = arrayOfNulls<Vertex>(data.size)
-        for (i in vertices.indices) {
-            vertices[i] = Vertex()
-            vertices[i]!!.position = data[i].position
-            vertices[i]!!.uvCoord = data[i].uvCoord
-            vertices[i]!!.normal = data[i].normal
-            vertices[i]!!.tangent = data[i].tangent
-            vertices[i]!!.bitangent = data[i].bitangent
+    fun toVertexArray(data: List<Vertex>): Array<Vertex> {
+        val vertices = ArrayList<Vertex>()
+        data.forEach { vertex ->
+            val v = Vertex()
+            v.position = vertex.position
+            v.uvCoord = vertex.uvCoord
+            v.normal = vertex.normal
+            v.tangent = vertex.tangent
+            v.bitangent = vertex.bitangent
+            vertices.add(v)
         }
-        return vertices
+        return vertices.toTypedArray()
     }
 
     fun generateNormalsCW(vertices: Array<Vertex>, indices: IntArray) {

@@ -66,7 +66,7 @@ open class CommandBuffer(private val device: VkDevice, private val commandPool: 
             clearValues.put(VkUtil.getClearValueColor(Vec3f(0f, 0f, 0f)))
         }
         if (depthAttachment == 1) {
-            clearValues.put(VkUtil.getClearValueDepth())
+            clearValues.put(VkUtil.clearValueDepth)
         }
         clearValues.flip()
         beginRenderPassCmd(renderPass, frameBuffer, width, height,
@@ -80,10 +80,10 @@ open class CommandBuffer(private val device: VkDevice, private val commandPool: 
         val clearValues = VkClearValue.calloc(
                 colorAttachmentCount + depthAttachment)
         for (i in 0 until colorAttachmentCount) {
-            clearValues.put(VkUtil.getClearValueColor(clearColor))
+            clearValues.put(clearColor?.let { VkUtil.getClearValueColor(it) })
         }
         if (depthAttachment == 1) {
-            clearValues.put(VkUtil.getClearValueDepth())
+            clearValues.put(VkUtil.clearValueDepth)
         }
         clearValues.flip()
         beginRenderPassCmd(renderPass, frameBuffer, width, height,
@@ -181,7 +181,7 @@ open class CommandBuffer(private val device: VkDevice, private val commandPool: 
                 .baseArrayLayer(0)
                 .layerCount(1)
         VK10.vkCmdClearColorImage(handle, image, imageLayout,
-                VkUtil.getClearColorValue(), subresourceRange)
+                VkUtil.clearColorValue, subresourceRange)
     }
 
     fun drawIndexedCmd(indexCount: Int) {

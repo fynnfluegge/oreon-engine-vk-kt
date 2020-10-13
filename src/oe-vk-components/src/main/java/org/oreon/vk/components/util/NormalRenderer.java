@@ -116,7 +116,7 @@ public class NormalRenderer {
 		commandBuffer = new ComputeCmdBuffer(deviceBundle.getLogicalDevice().getHandle(),
 				deviceBundle.getLogicalDevice().getComputeCommandPool(Thread.currentThread().getId()).getHandle(),
 				pipeline.getHandle(), pipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSet), N/16, N/16, 1,
+				VkUtil.INSTANCE.createLongArray(descriptorSet), N/16, N/16, 1,
 				pushConstants, VK_SHADER_STAGE_COMPUTE_BIT);
 		
 		fence = new Fence(deviceBundle.getLogicalDevice().getHandle());

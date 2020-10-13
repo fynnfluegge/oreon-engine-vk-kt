@@ -101,7 +101,7 @@ public class FXAA {
 		
 		computePipeline = new VkPipeline(device);
 		computePipeline.setPushConstantsRange(VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange);
-		computePipeline.setLayout(VkUtil.createLongBuffer(descriptorSetLayouts));
+		computePipeline.setLayout(VkUtil.INSTANCE.createLongBuffer(descriptorSetLayouts));
 		computePipeline.createComputePipeline(shader);
 		
 		shader.destroy();
@@ -112,7 +112,7 @@ public class FXAA {
 				VK_SHADER_STAGE_COMPUTE_BIT, pushConstants);
 		commandBuffer.bindComputePipelineCmd(computePipeline.getHandle());
 		commandBuffer.bindComputeDescriptorSetsCmd(computePipeline.getLayoutHandle(),
-				VkUtil.createLongArray(descriptorSets));
+				VkUtil.INSTANCE.createLongArray(descriptorSets));
 		commandBuffer.dispatchCmd(width/16, height/16, 1);
 	}
 	
