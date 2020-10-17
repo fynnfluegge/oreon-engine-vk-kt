@@ -134,12 +134,12 @@ class VkDeferredEngine : RenderEngine() {
             displayImageView = fxaa!!.fxaaImageView
         }
         if (BaseContext.config.bloomEnabled) {
-            bloom = Bloom(graphicsDevice,
+            bloom = Bloom(graphicsDevice!!,
                     BaseContext.config.frameWidth,
                     BaseContext.config.frameHeight,
                     displayImageView,
                     sampleCoverage!!.specularEmissionDiffuseSsaoBloomImageView)
-            displayImageView = bloom!!.bloomSceneImageView
+            displayImageView = bloom!!.bloomSceneImageBundle.imageView
         }
         if (gui != null) {
             // all post procssing effects and FXAA disabled
@@ -181,7 +181,7 @@ class VkDeferredEngine : RenderEngine() {
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)
         if (BaseContext.config.bloomEnabled) {
-            bloom!!.record(postProcessingCmdBuffer)
+            bloom!!.record(postProcessingCmdBuffer!!)
         }
         postProcessingCmdBuffer!!.finishRecord()
         postProcessingSubmitInfo = SubmitInfo(postProcessingCmdBuffer!!.handlePointer)
