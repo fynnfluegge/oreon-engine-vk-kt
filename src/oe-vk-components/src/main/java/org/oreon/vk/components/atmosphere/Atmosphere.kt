@@ -48,7 +48,9 @@ class Atmosphere : Renderable() {
         val memoryProperties = deviceManager.getPhysicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE).memoryProperties
         worldTransform!!.setLocalScaling(Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f)
         val mesh = VkAssimpModelLoader.loadModel("models/obj/dome", "dome.obj")[0].mesh
-        ProceduralTexturing.dome(mesh)
+        if (mesh != null) {
+            ProceduralTexturing.dome(mesh)
+        }
         val ubo = MemoryUtil.memAlloc(java.lang.Float.BYTES * 16)
         ubo.put(BufferUtil.createByteBuffer(worldTransform!!.worldMatrix))
         ubo.flip()

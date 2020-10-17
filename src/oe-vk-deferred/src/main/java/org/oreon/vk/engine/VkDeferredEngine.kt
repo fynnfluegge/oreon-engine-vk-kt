@@ -97,13 +97,13 @@ class VkDeferredEngine : RenderEngine() {
         transparencySubmitInfo = SubmitInfo()
         transparencySubmitInfo!!.setCommandBuffers(transparencyPrimaryCmdBuffer!!.handlePointer)
         transparencySubmitInfo!!.setSignalSemaphores(transparencySemaphore!!.handlePointer)
-        sampleCoverage = SampleCoverage(graphicsDevice,
+        sampleCoverage = SampleCoverage(graphicsDevice!!,
                 BaseContext.config.frameWidth,
                 BaseContext.config.frameHeight,
                 (offScreenFbo as OffScreenFbo).getAttachmentImageView(FrameBufferObject.Attachment.POSITION),
                 (offScreenFbo as OffScreenFbo).getAttachmentImageView(FrameBufferObject.Attachment.LIGHT_SCATTERING),
                 (offScreenFbo as OffScreenFbo).getAttachmentImageView(FrameBufferObject.Attachment.SPECULAR_EMISSION_DIFFUSE_SSAO_BLOOM))
-        deferredLighting = DeferredLighting(graphicsDevice,
+        deferredLighting = DeferredLighting(graphicsDevice!!,
                 BaseContext.config.frameWidth,
                 BaseContext.config.frameHeight,
                 (offScreenFbo as OffScreenFbo).getAttachmentImageView(FrameBufferObject.Attachment.COLOR),
@@ -114,7 +114,7 @@ class VkDeferredEngine : RenderEngine() {
         val opaqueTransparencyBlendWaitSemaphores = MemoryUtil.memAllocLong(2)
         opaqueTransparencyBlendWaitSemaphores.put(0, deferredStageSemaphore!!.handle)
         opaqueTransparencyBlendWaitSemaphores.put(1, transparencySemaphore!!.handle)
-        opaqueTransparencyBlending = OpaqueTransparencyBlending(graphicsDevice,
+        opaqueTransparencyBlending = OpaqueTransparencyBlending(graphicsDevice!!,
                 BaseContext.config.frameWidth,
                 BaseContext.config.frameHeight,
                 deferredLighting!!.deferredLightingSceneImageView,
@@ -127,7 +127,7 @@ class VkDeferredEngine : RenderEngine() {
                 opaqueTransparencyBlendWaitSemaphores)
         var displayImageView = deferredLighting!!.deferredLightingSceneImageView
         if (BaseContext.config.fxaaEnabled) {
-            fxaa = FXAA(graphicsDevice,
+            fxaa = FXAA(graphicsDevice!!,
                     BaseContext.config.frameWidth,
                     BaseContext.config.frameHeight,
                     displayImageView)
@@ -154,12 +154,12 @@ class VkDeferredEngine : RenderEngine() {
                 graphicsDevice!!.logicalDevice.getComputeCommandPool(Thread.currentThread().id)!!.handle,
                 VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY)
         deferredStageCmdBuffer!!.beginRecord(VK10.VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT)
-        sampleCoverage!!.record(deferredStageCmdBuffer)
+        sampleCoverage!!.record(deferredStageCmdBuffer!!)
         deferredStageCmdBuffer!!.pipelineMemoryBarrierCmd(
                 VK10.VK_ACCESS_SHADER_WRITE_BIT, VK10.VK_ACCESS_SHADER_READ_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)
-        deferredLighting!!.record(deferredStageCmdBuffer)
+        deferredLighting!!.record(deferredStageCmdBuffer!!)
         deferredStageCmdBuffer!!.finishRecord()
         val pComputeShaderWaitDstStageMask = MemoryUtil.memAllocInt(1)
         pComputeShaderWaitDstStageMask.put(0, VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)
@@ -174,7 +174,7 @@ class VkDeferredEngine : RenderEngine() {
                 VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY)
         postProcessingCmdBuffer!!.beginRecord(VK10.VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT)
         if (BaseContext.config.fxaaEnabled) {
-            fxaa!!.record(postProcessingCmdBuffer)
+            fxaa!!.record(postProcessingCmdBuffer!!)
         }
         postProcessingCmdBuffer!!.pipelineMemoryBarrierCmd(
                 VK10.VK_ACCESS_SHADER_WRITE_BIT, VK10.VK_ACCESS_SHADER_READ_BIT,
