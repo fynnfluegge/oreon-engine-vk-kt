@@ -284,10 +284,12 @@ class Water : Renderable() {
                 waterConfig.n, waterConfig.l, waterConfig.t_delta,
                 waterConfig.amplitude, waterConfig.windDirection,
                 waterConfig.windSpeed, waterConfig.capillarWavesSupression)
-        normalRenderer = NormalRenderer(
-                deviceManager.getDeviceBundle(DeviceType.MAJOR_GRAPHICS_DEVICE),
-                waterConfig.n, waterConfig.normalStrength,
-                fft.dyImageView, dySampler)
+        normalRenderer = deviceManager.getDeviceBundle(DeviceType.MAJOR_GRAPHICS_DEVICE)?.let {
+            NormalRenderer(
+                    it,
+                    waterConfig.n, waterConfig.normalStrength,
+                    fft.dyImageView, dySampler)
+        }!!
         normalRenderer.setWaitSemaphores(fft.fftSignalSemaphore.handlePointer)
         val graphicsShaderPipeline = ShaderPipeline(device.handle)
         graphicsShaderPipeline.createVertexShader("shaders/water/water.vert.spv")
