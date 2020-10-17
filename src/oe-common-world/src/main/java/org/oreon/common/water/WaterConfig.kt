@@ -1,7 +1,5 @@
 package org.oreon.common.water
 
-import lombok.Getter
-import lombok.Setter
 import org.oreon.core.math.Vec2f
 import org.oreon.core.math.Vec3f
 import java.io.IOException

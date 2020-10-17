@@ -45,8 +45,8 @@ class VkTexturePanel(imageFile: String?, xPos: Int, yPos: Int, xScaling: Int, yS
         val fontsImage = VkImageHelper.loadImageFromFile(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                device.transferQueue,
-                imageFile,
+                device.transferQueue!!,
+                imageFile!!,
                 VK10.VK_IMAGE_USAGE_SAMPLED_BIT,
                 VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK10.VK_ACCESS_SHADER_READ_BIT,

@@ -7,7 +7,6 @@ import org.oreon.core.math.Vec4f
 import org.oreon.core.model.Mesh
 import org.oreon.core.model.Vertex
 import java.nio.FloatBuffer
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ln
 

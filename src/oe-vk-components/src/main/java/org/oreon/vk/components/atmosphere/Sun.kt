@@ -49,22 +49,24 @@ class Sun : Renderable() {
         val sunImage = VkImageHelper.loadImageFromFile(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                device.transferQueue,
+                device.transferQueue!!,
                 "textures/sun/sun.png",
                 VK10.VK_IMAGE_USAGE_SAMPLED_BIT,
                 VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK10.VK_ACCESS_SHADER_READ_BIT,
                 VK10.VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                 VK10.VK_QUEUE_GRAPHICS_BIT)
-        val sunImageView = VkImageView(device.handle,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, sunImage.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        val sunImageView = sunImage?.handle?.let {
+            VkImageView(device.handle,
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, it, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        }
         val sunImageSampler = VkSampler(device.handle, VK10.VK_FILTER_LINEAR,
                 false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_REPEAT)
-        sunImageBundle = VkImageBundle(sunImage, sunImageView, sunImageSampler)
+        sunImageBundle = sunImage?.let { VkImageBundle(it, sunImageView!!, sunImageSampler) }!!
         val sunImage_lightScattering = VkImageHelper.loadImageFromFile(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                device.transferQueue,
+                device.transferQueue!!,
                 "textures/sun/sun_small.png",
                 VK10.VK_IMAGE_USAGE_SAMPLED_BIT,
                 VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -72,11 +74,13 @@ class Sun : Renderable() {
                 VK10.VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                 VK10.VK_QUEUE_GRAPHICS_BIT)
         val sunImageView_lightScattering = VkImageView(device.handle,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, sunImage_lightScattering.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, sunImage_lightScattering!!.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
         val sunImageSampler_lightScattering = VkSampler(device.handle, VK10.VK_FILTER_LINEAR,
                 false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_REPEAT)
-        sunImageBundle_lightScattering = VkImageBundle(sunImage_lightScattering,
-                sunImageView_lightScattering, sunImageSampler_lightScattering)
+        sunImageBundle_lightScattering = sunImage_lightScattering?.let {
+            VkImageBundle(it,
+                    sunImageView_lightScattering, sunImageSampler_lightScattering)
+        }!!
         val vertexInput = VkVertexInput(VertexLayout.POS)
         val vertexBuffer = BufferUtil.createByteBuffer(array)
         val vertexBufferObject = VkBufferHelper.createDeviceLocalBuffer(
@@ -96,7 +100,7 @@ class Sun : Renderable() {
                 device.getDescriptorPool(Thread.currentThread().id)!!.handle,
                 descriptorSetLayout.handlePointer)
         descriptorSet.updateDescriptorImageBuffer(
-                sunImageView.handle,
+                sunImageView!!.handle,
                 VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 sunImageSampler.handle, 0,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)

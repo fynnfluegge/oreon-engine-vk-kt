@@ -49,34 +49,38 @@ class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
                 VK10.VK_FORMAT_R32G32B32A32_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT)
         h0minusk_imageView = VkImageView(device,
                 VK10.VK_FORMAT_R32G32B32A32_SFLOAT, h0minusk_image.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
-        val noise0Image = VkImageHelper.loadImageFromFile(
+        val noise0Image = deviceBundle.logicalDevice.transferQueue?.let {
+            VkImageHelper.loadImageFromFile(
                 device, memoryProperties,
                 deviceBundle.logicalDevice.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                deviceBundle.logicalDevice.transferQueue,
+                    it,
                 "textures/noise/Noise" + N + "_0.jpg",
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT,
                 VK10.VK_IMAGE_LAYOUT_GENERAL,
                 VK10.VK_ACCESS_SHADER_READ_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_QUEUE_FAMILY_IGNORED)
+        }
         val noise0ImageView = VkImageView(device,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise0Image.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
-        val noise1Image = VkImageHelper.loadImageFromFile(
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise0Image!!.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        val noise1Image = deviceBundle.logicalDevice.transferQueue?.let {
+            VkImageHelper.loadImageFromFile(
                 device, memoryProperties,
                 deviceBundle.logicalDevice.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                deviceBundle.logicalDevice.transferQueue,
+                    it,
                 "textures/noise/Noise" + N + "_1.jpg",
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT,
                 VK10.VK_IMAGE_LAYOUT_GENERAL,
                 VK10.VK_ACCESS_SHADER_READ_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_QUEUE_FAMILY_IGNORED)
+        }
         val noise1ImageView = VkImageView(device,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise1Image.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise1Image!!.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
         val noise2Image = VkImageHelper.loadImageFromFile(
                 device, memoryProperties,
                 deviceBundle.logicalDevice.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                deviceBundle.logicalDevice.transferQueue,
+                deviceBundle.logicalDevice.transferQueue!!,
                 "textures/noise/Noise" + N + "_2.jpg",
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT,
                 VK10.VK_IMAGE_LAYOUT_GENERAL,
@@ -84,11 +88,11 @@ class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_QUEUE_FAMILY_IGNORED)
         val noise2ImageView = VkImageView(device,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise2Image.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise2Image!!.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
         val noise3Image = VkImageHelper.loadImageFromFile(
                 device, memoryProperties,
                 deviceBundle.logicalDevice.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                deviceBundle.logicalDevice.transferQueue,
+                deviceBundle.logicalDevice.transferQueue!!,
                 "textures/noise/Noise" + N + "_3.jpg",
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT,
                 VK10.VK_IMAGE_LAYOUT_GENERAL,
@@ -96,7 +100,7 @@ class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_QUEUE_FAMILY_IGNORED)
         val noise3ImageView = VkImageView(device,
-                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise3Image.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+                VK10.VK_FORMAT_R8G8B8A8_UNORM, noise3Image!!.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
         val pushConstantRange = Integer.BYTES * 2 + java.lang.Float.BYTES * 6
         val pushConstants = MemoryUtil.memAlloc(pushConstantRange)
         pushConstants.putInt(N)
@@ -130,10 +134,10 @@ class H0k(deviceBundle: VkDeviceBundle, N: Int, L: Int,
         fence.destroy()
         descriptor.destroy()
         MemoryUtil.memFree(pushConstants)
-        noise0Image.destroy()
-        noise1Image.destroy()
-        noise2Image.destroy()
-        noise3Image.destroy()
+        noise0Image!!.destroy()
+        noise1Image!!.destroy()
+        noise2Image!!.destroy()
+        noise3Image!!.destroy()
         noise0ImageView.destroy()
         noise1ImageView.destroy()
         noise2ImageView.destroy()

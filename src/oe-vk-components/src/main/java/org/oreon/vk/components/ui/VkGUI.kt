@@ -85,7 +85,7 @@ open class VkGUI : GUI() {
         val fontsImage = VkImageHelper.loadImageFromFile(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
-                device.transferQueue,
+                device.transferQueue!!,
                 "gui/tex/Fonts.png",
                 VK10.VK_IMAGE_USAGE_SAMPLED_BIT,
                 VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
