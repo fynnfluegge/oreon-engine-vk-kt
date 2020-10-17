@@ -389,7 +389,7 @@ class Water : Renderable() {
         pushConstants.putFloat(waterConfig.kRefraction)
         pushConstants.putInt(config.frameWidth)
         pushConstants.putInt(config.frameHeight)
-        pushConstants.putInt(if (waterConfig.isDiffuse) 1 else 0)
+        pushConstants.putInt(if (waterConfig.diffuse) 1 else 0)
         pushConstants.putFloat(waterConfig.emission)
         pushConstants.putFloat(waterConfig.specularFactor)
         pushConstants.putFloat(waterConfig.specularAmplifier)
