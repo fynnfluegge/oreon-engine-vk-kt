@@ -8,6 +8,7 @@ import org.oreon.core.model.Mesh
 import org.oreon.core.model.Vertex
 import java.nio.FloatBuffer
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.ln
 
 object Util {
@@ -232,8 +233,8 @@ object Util {
         return kernel
     }
 
-    fun generateRandomKernel4D(kernelSize: Int): Array<Vec4f?> {
-        val kernel = arrayOfNulls<Vec4f>(kernelSize)
+    fun generateRandomKernel4D(kernelSize: Int): Array<Vec4f> {
+        val kernel = ArrayList<Vec4f>(kernelSize)
         for (i in 0 until kernelSize) {
             kernel[i] = Vec4f(Math.random().toFloat() * 2 - 1,
                     Math.random().toFloat() * 2 - 1,
@@ -244,6 +245,6 @@ object Util {
             scale = Math.min(Math.max(0.01, scale * scale.toDouble()), 1.0).toFloat()
             kernel[i] = kernel[i]!!.mul(scale).mul(-1f)
         }
-        return kernel
+        return kernel.toTypedArray()
     }
 }
