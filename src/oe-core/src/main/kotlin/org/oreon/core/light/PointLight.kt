@@ -2,7 +2,7 @@ package org.oreon.core.light
 
 import org.oreon.core.math.Vec3f
 
-class PointLight(var position: Vec3f, color: Vec3f?, intensity: Float) : Light(color, intensity) {
+class PointLight(var position: Vec3f, color: Vec3f, intensity: Float) : Light(color, intensity) {
     var isEnabled = 0
     var isSpot = 0
     var constantAttenuation = 0f

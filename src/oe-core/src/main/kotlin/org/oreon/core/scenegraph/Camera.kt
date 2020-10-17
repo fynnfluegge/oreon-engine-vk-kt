@@ -50,8 +50,8 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
     var isDownRotation = false
     var isLeftRotation = false
     var isRightRotation = false
-    val frustumPlanes = arrayOfNulls<Vec4f>(6)
-    val frustumCorners = arrayOfNulls<Vec3f>(8)
+    val frustumPlanes = ArrayList<Vec4f>(6)
+    val frustumCorners = ArrayList<Vec3f>(8)
     protected var floatBuffer: FloatBuffer
     protected val bufferSize = java.lang.Float.BYTES * (4 + 16 + 16 + 6 * 4 + 4)
     abstract fun init()
@@ -168,7 +168,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
         floatBuffer.put(0f)
         floatBuffer.put(BufferUtil.createFlippedBuffer(viewMatrix))
         floatBuffer.put(BufferUtil.createFlippedBuffer(viewProjectionMatrix))
-        floatBuffer.put(BufferUtil.createFlippedBuffer(frustumPlanes))
+        floatBuffer.put(BufferUtil.createFlippedBuffer(frustumPlanes.toTypedArray()))
         floatBuffer.put(width)
         floatBuffer.put(height)
         floatBuffer.put(0f)
@@ -182,6 +182,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
     }
 
     private fun initfrustumPlanes() {
+
         // ax * bx * cx +  d = 0; store a,b,c,d
 
         //left plane
@@ -193,7 +194,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                 projectionMatrix[3, 1] + projectionMatrix[0, 1],
                 projectionMatrix[3, 2] + projectionMatrix[0, 2],
                 projectionMatrix[3, 3] + projectionMatrix[0, 3])
-        frustumPlanes[0] = normalizePlane(leftPlane)
+        frustumPlanes.add(normalizePlane(leftPlane))
 
         //right plane
         val rightPlane = Vec4f(
@@ -204,7 +205,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                 projectionMatrix[3, 1] - projectionMatrix[0, 1],
                 projectionMatrix[3, 2] - projectionMatrix[0, 2],
                 projectionMatrix[3, 3] - projectionMatrix[0, 3])
-        frustumPlanes[1] = normalizePlane(rightPlane)
+        frustumPlanes.add(normalizePlane(rightPlane))
 
         //bot plane
         val botPlane = Vec4f(
@@ -213,7 +214,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                         * Math.tan(Math.toRadians(fovY / 2.toDouble())).toFloat(),
                 projectionMatrix[3, 2] + projectionMatrix[1, 2],
                 projectionMatrix[3, 3] + projectionMatrix[1, 3])
-        frustumPlanes[2] = normalizePlane(botPlane)
+        frustumPlanes.add(normalizePlane(botPlane))
 
         //top plane
         val topPlane = Vec4f(
@@ -222,7 +223,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                         * Math.tan(Math.toRadians(fovY / 2.toDouble())).toFloat(),
                 projectionMatrix[3, 2] - projectionMatrix[1, 2],
                 projectionMatrix[3, 3] - projectionMatrix[1, 3])
-        frustumPlanes[3] = normalizePlane(topPlane)
+        frustumPlanes.add(normalizePlane(topPlane))
 
         //near plane
         val nearPlane = Vec4f(
@@ -230,7 +231,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                 projectionMatrix[3, 1] + projectionMatrix[2, 1],
                 projectionMatrix[3, 2] + projectionMatrix[2, 2],
                 projectionMatrix[3, 3] + projectionMatrix[2, 3])
-        frustumPlanes[4] = normalizePlane(nearPlane)
+        frustumPlanes.add(normalizePlane(nearPlane))
 
         //far plane
         val farPlane = Vec4f(
@@ -238,7 +239,7 @@ abstract class Camera protected constructor(position: Vec3f, forward: Vec3f, up:
                 projectionMatrix[3, 1] - projectionMatrix[2, 1],
                 projectionMatrix[3, 2] - projectionMatrix[2, 2],
                 projectionMatrix[3, 3] - projectionMatrix[2, 3])
-        frustumPlanes[5] = normalizePlane(farPlane)
+        frustumPlanes.add(normalizePlane(farPlane))
     }
 
     fun rotateY(angle: Float) {

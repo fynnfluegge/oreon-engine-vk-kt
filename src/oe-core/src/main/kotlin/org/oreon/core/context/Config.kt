@@ -48,13 +48,13 @@ class Config {
 
     // Atmosphere parameters
     var sunRadius = 0f
-    var sunPosition: Vec3f? = null
-    var sunColor: Vec3f? = null
+    lateinit var sunPosition: Vec3f
+    lateinit var sunColor: Vec3f
     var sunIntensity = 0f
     var ambient = 0f
     var AtmosphericScatteringEnable = false
     var atmosphereBloomFactor = 0f
-    var fogColor: Vec3f? = null
+    lateinit var fogColor: Vec3f
     var horizonVerticalShift = 0f
     var sightRange = 0f
 

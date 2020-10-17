@@ -118,7 +118,7 @@ public class SSAO {
 		// ssao resources
 		int pushConstantRange = Float.BYTES * 21;
 		ByteBuffer pushConstants = memAlloc(pushConstantRange);
-		pushConstants.put(BufferUtil.createByteBuffer(BaseContext.Companion.getCamera().getProjectionMatrix()));
+		pushConstants.put(BufferUtil.INSTANCE.createByteBuffer(BaseContext.Companion.getCamera().getProjectionMatrix()));
 		pushConstants.putFloat(1f);
 		pushConstants.putFloat(0.02f);
 		pushConstants.putFloat(kernelSize);
@@ -129,7 +129,7 @@ public class SSAO {
 		kernelBuffer = VkBufferHelper.INSTANCE.createDeviceLocalBuffer(device, memoryProperties,
         		deviceBundle.getLogicalDevice().getTransferCommandPool(Thread.currentThread().getId()).getHandle(),
         		deviceBundle.getLogicalDevice().getTransferQueue(),
-        		BufferUtil.createByteBuffer(kernel),
+        		BufferUtil.INSTANCE.createByteBuffer(kernel),
         		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		
 		ssaoDescriptorSetLayout = new DescriptorSetLayout(device, 6);

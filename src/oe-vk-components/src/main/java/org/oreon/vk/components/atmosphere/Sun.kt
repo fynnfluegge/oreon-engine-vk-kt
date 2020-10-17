@@ -44,7 +44,7 @@ class Sun : Renderable() {
         val memoryProperties = deviceManager.getPhysicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE).memoryProperties
         worldTransform!!.translation = config.sunPosition!!.normalize().mul(-2600f)
         val origin = Vec3f(0f, 0f, 0f)
-        val array = arrayOfNulls<Vec3f>(1)
+        val array = arrayOf<Vec3f>()
         array[0] = origin
         val sunImage = VkImageHelper.loadImageFromFile(
                 device.handle, memoryProperties,

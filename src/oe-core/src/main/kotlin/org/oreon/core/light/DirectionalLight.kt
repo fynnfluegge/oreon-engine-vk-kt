@@ -11,13 +11,13 @@ import org.oreon.core.util.BufferUtil
 import org.oreon.core.util.Constants
 import java.nio.FloatBuffer
 
-abstract class DirectionalLight private constructor(private var direction: Vec3f, ambient: Vec3f, color: Vec3f?, intensity: Float) : Light(color, intensity) {
+abstract class DirectionalLight private constructor(private var direction: Vec3f, ambient: Vec3f, color: Vec3f, intensity: Float) : Light(color, intensity) {
     var ambient: Vec3f = ambient
     var m_View: Matrix4f
     var right: Vec3f
     var up: Vec3f
     val splitLightCameras: Array<PssmCamera?>
-    var floatBufferLight: FloatBuffer? = null
+    var floatBufferLight: FloatBuffer
     var floatBufferMatrices: FloatBuffer
     val lightBufferSize = java.lang.Float.BYTES * 12
     val matricesBufferSize = (java.lang.Float.BYTES * 16 * 7 // 6 matrices, 16 floats per matrix 

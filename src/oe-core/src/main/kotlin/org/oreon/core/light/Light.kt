@@ -8,11 +8,11 @@ import org.oreon.core.query.OcclusionQuery
 import org.oreon.core.scenegraph.Node
 
 open class Light : Node {
-    var color: Vec3f? = null
+    lateinit var color: Vec3f
     var intensity = 0f
     var occlusionQuery: OcclusionQuery? = null
 
-    constructor(color: Vec3f?, intensity: Float) {
+    constructor(color: Vec3f, intensity: Float) {
         this.color = color
         this.intensity = intensity
     }

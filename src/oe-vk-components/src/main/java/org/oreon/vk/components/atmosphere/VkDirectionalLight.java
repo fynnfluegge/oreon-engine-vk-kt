@@ -33,7 +33,7 @@ public class VkDirectionalLight extends DirectionalLight{
 		VkPhysicalDeviceMemoryProperties memoryProperties = 
 				VkContext.INSTANCE.getDeviceManager().getPhysicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE).getMemoryProperties();
 		
-		ubo_light = new VkUniformBuffer(device.getHandle(), memoryProperties, BufferUtil.createByteBuffer(getFloatBufferLight()));
+		ubo_light = new VkUniformBuffer(device.getHandle(), memoryProperties, BufferUtil.INSTANCE.createByteBuffer(getFloatBufferLight()));
 		
 		descriptorSetLayout = new DescriptorSetLayout(device.getHandle(), 1);
 	    descriptorSetLayout.addLayoutBinding(0,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -51,7 +51,7 @@ public class VkDirectionalLight extends DirectionalLight{
 	}
 
 	public void updateLightUbo() {
-		ubo_light.mapMemory(BufferUtil.createByteBuffer(getFloatBufferLight()));
+		ubo_light.mapMemory(BufferUtil.INSTANCE.createByteBuffer(getFloatBufferLight()));
 	}
 
 	public void updateMatricesUbo() {

@@ -47,14 +47,14 @@ public class TerrainChunk extends QuadtreeNode{
 		int pushConstantsRange = Float.BYTES * 42 + Integer.BYTES * 11;
 		
 		ByteBuffer pushConstants = memAlloc(pushConstantsRange);
-		pushConstants.put(BufferUtil.createByteBuffer(getLocalTransform().getWorldMatrix()));
-		pushConstants.put(BufferUtil.createByteBuffer(getWorldTransform().getWorldMatrixRTS()));
+		pushConstants.put(BufferUtil.INSTANCE.createByteBuffer(getLocalTransform().getWorldMatrix()));
+		pushConstants.put(BufferUtil.INSTANCE.createByteBuffer(getWorldTransform().getWorldMatrixRTS()));
 		pushConstants.putFloat(quadtreeConfig.getVerticalScaling());
 		pushConstants.putFloat(quadtreeConfig.getHorizontalScaling());
 		pushConstants.putInt(chunkConfig.getLod());
 		pushConstants.putFloat(chunkConfig.getGap());
-		pushConstants.put(BufferUtil.createByteBuffer(location));
-		pushConstants.put(BufferUtil.createByteBuffer(index));
+		pushConstants.put(BufferUtil.INSTANCE.createByteBuffer(location));
+		pushConstants.put(BufferUtil.INSTANCE.createByteBuffer(index));
 		for (int morphArea : quadtreeConfig.getLod_morphing_area()){
 			pushConstants.putInt(morphArea);
 		}

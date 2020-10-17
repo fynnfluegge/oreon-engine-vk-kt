@@ -23,17 +23,19 @@ class VkMeshData(val device: VkDevice? = null, val memoryProperties: VkPhysicalD
 
     fun create() {
 
-        val vertexByteBuffer = BufferUtil.createByteBuffer(mesh?.vertices, vertexLayout)
+        val vertexByteBuffer = vertexLayout?.let { mesh?.vertices?.let { it1 -> BufferUtil.createByteBuffer(it1, it) } }
         val indexByteBuffer = BufferUtil.createByteBuffer(*mesh!!.indices)
         vertexCount = mesh.vertices.size
         indexCount = mesh.indices.size
-        vertexBufferObject = VkBufferHelper.createDeviceLocalBuffer(
+        vertexBufferObject = vertexByteBuffer?.let {
+            VkBufferHelper.createDeviceLocalBuffer(
                 device, memoryProperties,
                 commandPool!!.handle, queue,
-                vertexByteBuffer, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+                    it, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+        }
         indexBufferObject = VkBufferHelper.createDeviceLocalBuffer(
                 device, memoryProperties,
-                commandPool.handle, queue,
+                commandPool!!.handle, queue,
                 indexByteBuffer, VK10.VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
     }
 
