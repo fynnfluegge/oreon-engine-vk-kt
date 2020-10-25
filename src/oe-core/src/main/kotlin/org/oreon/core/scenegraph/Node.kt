@@ -11,8 +11,8 @@ open class Node {
     var parentNode: Node? = null
         private set
     private var children: MutableList<Node>? = null
-    var worldTransform: Transform? = null
-    var localTransform: Transform? = null
+    var worldTransform: Transform
+    var localTransform: Transform
 
     fun addChild(child: Node) {
         child.setParent(this)
@@ -20,9 +20,9 @@ open class Node {
     }
 
     open fun update() {
-        worldTransform!!.rotation = parentNode!!.worldTransform!!.rotation?.let { worldTransform!!.localRotation!!.add(it) }
-        worldTransform!!.translation = parentNode!!.worldTransform!!.translation?.let { worldTransform!!.localTranslation!!.add(it) }
-        worldTransform!!.scaling = parentNode!!.worldTransform!!.scaling?.let { worldTransform!!.localScaling!!.mul(it) }
+        worldTransform.rotation = parentNode!!.worldTransform.rotation?.let { worldTransform.localRotation!!.add(it) }
+        worldTransform.translation = parentNode!!.worldTransform.translation?.let { worldTransform.localTranslation!!.add(it) }
+        worldTransform.scaling = parentNode!!.worldTransform.scaling?.let { worldTransform.localScaling!!.mul(it) }
         for (child in children!!) child.update()
     }
 
@@ -62,7 +62,7 @@ open class Node {
         parentNode = parent
     }
 
-    fun getChildren(): List<Node>? {
+    fun getChildren(): MutableList<Node>? {
         return children
     }
 

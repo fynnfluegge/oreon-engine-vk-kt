@@ -1,6 +1,5 @@
 package org.oreon.common.quadtree
 
-import lombok.Getter
 import org.oreon.core.context.BaseContext.Companion.camera
 import org.oreon.core.context.BaseContext.Companion.config
 import org.oreon.core.math.Transform
@@ -10,16 +9,16 @@ import org.oreon.core.scenegraph.NodeComponent
 import org.oreon.core.scenegraph.NodeComponentType
 import org.oreon.core.scenegraph.RenderList
 import org.oreon.core.scenegraph.Renderable
+import kotlin.math.floor
+import kotlin.math.pow
 
-abstract class QuadtreeNode(components: Map<NodeComponentType?, NodeComponent>,
+abstract class QuadtreeNode(components: Map<NodeComponentType, NodeComponent>,
                             quadtreeCache: QuadtreeCache, worldTransform: Transform,
-                            location: Vec2f, lod: Int, index: Vec2f?) : Renderable() {
-    protected var worldPos: Vec3f? = null
-    protected var isleaf: Boolean
-    protected var quadtreeCache: QuadtreeCache
-    protected var quadtreeConfig: QuadtreeConfig?
-
-    @Getter
+                            location: Vec2f, lod: Int, index: Vec2f) : Renderable() {
+    private lateinit var worldPos: Vec3f
+    private var isleaf: Boolean
+    private var quadtreeCache: QuadtreeCache
+    protected var quadtreeConfig: QuadtreeConfig
     protected var chunkConfig: ChunkConfig
     override fun update() {
         for (child in getChildren()!!) child.update()
@@ -101,7 +100,7 @@ abstract class QuadtreeNode(components: Map<NodeComponentType?, NodeComponent>,
             isleaf = true
         }
         if (getChildren()!!.size != 0) {
-            getChildren().clear()
+            getChildren()!!.clear()
         }
     }
 
@@ -127,13 +126,13 @@ abstract class QuadtreeNode(components: Map<NodeComponentType?, NodeComponent>,
                     quadtreeCache.addChunk(child)
                     (child as QuadtreeNode).cacheChildrenTree()
                 }
-                getChildren().clear()
+                getChildren()!!.clear();
             }
         }
     }
 
-    abstract fun createChildChunk(components: Map<NodeComponentType?, NodeComponent?>?,
-                                  quadtreeCache: QuadtreeCache?, worldTransform: Transform?, location: Vec2f?, levelOfDetail: Int, index: Vec2f?): QuadtreeNode?
+    abstract fun createChildChunk(components: Map<NodeComponentType, NodeComponent>,
+                                  quadtreeCache: QuadtreeCache, worldTransform: Transform, location: Vec2f, levelOfDetail: Int, index: Vec2f): QuadtreeNode?
 
     protected fun computeWorldPos() {
 
@@ -150,12 +149,12 @@ abstract class QuadtreeNode(components: Map<NodeComponentType?, NodeComponent>,
         pos.y = z
         pos = pos.add(quadtreeConfig!!.horizontalScaling / 2f)
         pos = pos.div(quadtreeConfig!!.horizontalScaling)
-        val floor = Vec2f(Math.floor(pos.x.toDouble()).toInt(), Math.floor(pos.y.toDouble()).toInt())
+        val floor = Vec2f(floor(pos.x.toDouble()).toFloat(), floor(pos.y.toDouble()).toFloat())
         pos = pos.sub(floor)
         pos = pos.mul(quadtreeConfig!!.heightmap!!.metaData!!.width.toFloat())
-        val x0 = Math.floor(pos.x.toDouble()).toInt()
+        val x0 = floor(pos.x.toDouble()).toInt()
         val x1 = x0 + 1
-        val z0 = Math.floor(pos.y.toDouble()).toInt()
+        val z0 = floor(pos.y.toDouble()).toInt()
         val z1 = z0 + 1
         val h0 = quadtreeConfig!!.heightmapDataBuffer!![quadtreeConfig!!.heightmap!!.metaData!!.width * z0 + x0]
         val h1 = quadtreeConfig!!.heightmapDataBuffer!![quadtreeConfig!!.heightmap!!.metaData!!.width * z0 + x1]
@@ -193,14 +192,14 @@ abstract class QuadtreeNode(components: Map<NodeComponentType?, NodeComponent>,
         }
         quadtreeConfig = getComponent(NodeComponentType.CONFIGURATION)
         chunkConfig = ChunkConfig(lod, location, index,
-                1f / (quadtreeConfig!!.rootChunkCount * Math.pow(2.0, lod.toDouble()).toFloat()))
+                1f / (quadtreeConfig!!.rootChunkCount * 2.0.pow(lod.toDouble()).toFloat()))
         this.quadtreeCache = quadtreeCache
         isleaf = true
-        val localScaling = Vec3f(chunkConfig.gap, 0, chunkConfig.gap)
-        val localTranslation = Vec3f(location.x, 0, location.y)
+        val localScaling = Vec3f(chunkConfig.gap, 0f, chunkConfig.gap)
+        val localTranslation = Vec3f(location.x, 0f, location.y)
         localTransform!!.scaling = localScaling
         localTransform!!.translation = localTranslation
-        worldTransform = worldTransform
+        this.worldTransform = worldTransform
         worldTransform.scaling!!.y = quadtreeConfig!!.verticalScaling
         computeWorldPos()
         updateQuadtree()

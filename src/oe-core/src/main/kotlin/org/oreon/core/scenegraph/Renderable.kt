@@ -81,8 +81,8 @@ open class Renderable : Node() {
         return components
     }
 
-    fun <T> getComponent(type: NodeComponentType): T? {
-        return components[type] as T?
+    fun <T> getComponent(type: NodeComponentType): T {
+        return components[type] as T
     }
 
 }

@@ -22,8 +22,8 @@ import org.oreon.core.vk.util.VkUtil.createLongBuffer
 import org.oreon.core.vk.wrapper.command.SecondaryDrawCmdBuffer
 import org.oreon.core.vk.wrapper.pipeline.GraphicsTessellationPipeline
 
-class TerrainChunk(components: Map<NodeComponentType, NodeComponent>, quadtreeCache: QuadtreeCache?,
-                   worldTransform: Transform, location: Vec2f?, levelOfDetail: Int, index: Vec2f?) : QuadtreeNode(components, quadtreeCache, worldTransform, location, levelOfDetail, index) {
+class TerrainChunk(components: Map<NodeComponentType, NodeComponent>, quadtreeCache: QuadtreeCache,
+                   worldTransform: Transform, location: Vec2f, levelOfDetail: Int, index: Vec2f) : QuadtreeNode(components, quadtreeCache, worldTransform, location, levelOfDetail, index) {
     override fun createChildChunk(components: Map<NodeComponentType, NodeComponent>, quadtreeCache: QuadtreeCache,
                                   worldTransform: Transform, location: Vec2f, levelOfDetail: Int, index: Vec2f): QuadtreeNode {
         return TerrainChunk(components, quadtreeCache, worldTransform, location, levelOfDetail, index)
