@@ -24,7 +24,7 @@ import org.oreon.core.vk.wrapper.command.SecondaryDrawIndexedCmdBuffer
 import org.oreon.core.vk.wrapper.pipeline.GraphicsPipelineAlphaBlend
 import java.util.*
 
-class VkStaticTextPanel(text: String?, xPos: Int, yPos: Int, xScaling: Int, yScaling: Int,
+class VkStaticTextPanel(text: String, xPos: Int, yPos: Int, xScaling: Int, yScaling: Int,
                         fontsImageView: VkImageView, fontsSampler: VkSampler, fbo: VkFrameBufferObject) : UITextPanel(text, xPos, yPos, xScaling, yScaling) {
     init {
         // flip y-axxis for vulkan coordinate system

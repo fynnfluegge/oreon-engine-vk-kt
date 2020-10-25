@@ -26,7 +26,7 @@ import org.oreon.core.vk.wrapper.command.SecondaryDrawIndexedCmdBuffer
 import org.oreon.core.vk.wrapper.pipeline.GraphicsPipelineAlphaBlend
 import java.util.*
 
-class VkDynamicTextPanel(text: String?, xPos: Int, yPos: Int, xScaling: Int, yScaling: Int,
+class VkDynamicTextPanel(text: String, xPos: Int, yPos: Int, xScaling: Int, yScaling: Int,
                          fontsImageView: VkImageView, fontsSampler: VkSampler, fbo: VkFrameBufferObject) : UITextPanel(text, xPos, yPos, xScaling, yScaling) {
     private val graphicsPipeline: VkPipeline
     private val cmdBuffer: CommandBuffer
