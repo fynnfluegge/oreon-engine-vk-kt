@@ -6,7 +6,7 @@ import org.oreon.core.math.Vec2f
 import org.oreon.core.scenegraph.NodeComponent
 import org.oreon.core.scenegraph.NodeComponentType
 
-abstract class TerrainQuadtree(components: Map<NodeComponentType?, NodeComponent?>?,
+abstract class TerrainQuadtree(components: Map<NodeComponentType, NodeComponent>,
                                rootChunkCount: Int, horizontalScaling: Float) : Quadtree() {
     init {
         val worldTransform = Transform()
