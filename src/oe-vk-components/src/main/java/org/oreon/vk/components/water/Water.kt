@@ -7,6 +7,7 @@ import org.lwjgl.vulkan.VkPhysicalDeviceMemoryProperties
 import org.lwjgl.vulkan.VkQueue
 import org.oreon.common.water.WaterConfig
 import org.oreon.core.context.BaseContext.Companion.config
+import org.oreon.core.math.Vec3f
 import org.oreon.core.math.Vec4f
 import org.oreon.core.model.Vertex.VertexLayout
 import org.oreon.core.scenegraph.NodeComponentType
@@ -456,9 +457,9 @@ class Water : Renderable() {
         offScreenRefractionSubmitInfo.fence = refractionFence
         val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject)
         val mainRenderInfo = VkRenderInfo(commandBuffer = graphicsCommandBuffer, descriptorSets = descriptorSets,
-            descriptorSetLayouts = descriptorSetLayouts, pipeline = graphicsPipeline)
+                descriptorSetLayouts = descriptorSetLayouts, pipeline = graphicsPipeline)
         val wireframeRenderInfo = VkRenderInfo(commandBuffer = wireframeCommandBuffer, descriptorSets = descriptorSets,
-            descriptorSetLayouts = descriptorSetLayouts, pipeline = wireframeGraphicsPipeline)
+                descriptorSetLayouts = descriptorSetLayouts, pipeline = wireframeGraphicsPipeline)
         addComponent(NodeComponentType.MESH_DATA, meshData)
         addComponent(NodeComponentType.MAIN_RENDERINFO, mainRenderInfo);
 	    addComponent(NodeComponentType.WIREFRAME_RENDERINFO, wireframeRenderInfo);
@@ -473,7 +474,7 @@ class Water : Renderable() {
                 refractionFbo.height,
                 refractionFbo.colorAttachmentCount,
                 refractionFbo.depthAttachmentCount,
-                waterConfig.baseColor.mul(1.5f),
+                Vec3f(0.1f, 0.14f, 0.15f).mul(1.4f),
                 null)
         offScreenRefractionSubmitInfo.submit(
                 graphicsQueue)

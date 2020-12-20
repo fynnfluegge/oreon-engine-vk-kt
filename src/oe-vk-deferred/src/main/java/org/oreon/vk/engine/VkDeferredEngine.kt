@@ -139,7 +139,7 @@ class VkDeferredEngine : RenderEngine() {
                     BaseContext.config.frameHeight,
                     displayImageView,
                     sampleCoverage!!.specularEmissionDiffuseSsaoBloomImageView)
-            displayImageView = bloom!!.bloomSceneImageBundle.imageView
+            displayImageView = bloom!!.bloomSceneImageBundle!!.imageView
         }
         if (gui != null) {
             // all post procssing effects and FXAA disabled

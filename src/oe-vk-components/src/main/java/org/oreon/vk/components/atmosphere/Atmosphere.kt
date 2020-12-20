@@ -2,13 +2,13 @@ package org.oreon.vk.components.atmosphere
 
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.vulkan.VK10
-import org.oreon.core.context.BaseContext.Companion.config
+import org.oreon.core.context.BaseContext
 import org.oreon.core.model.Vertex.VertexLayout
 import org.oreon.core.scenegraph.NodeComponentType
 import org.oreon.core.scenegraph.Renderable
-import org.oreon.core.util.BufferUtil
+import org.oreon.core.util.BufferUtil.createByteBuffer
 import org.oreon.core.util.Constants
-import org.oreon.core.util.ProceduralTexturing
+import org.oreon.core.util.ProceduralTexturing.dome
 import org.oreon.core.vk.command.CommandBuffer
 import org.oreon.core.vk.context.DeviceManager.DeviceType
 import org.oreon.core.vk.context.VkContext.deviceManager
@@ -23,9 +23,10 @@ import org.oreon.core.vk.pipeline.VkPipeline
 import org.oreon.core.vk.pipeline.VkVertexInput
 import org.oreon.core.vk.scenegraph.VkMeshData
 import org.oreon.core.vk.scenegraph.VkRenderInfo
-import org.oreon.core.vk.util.VkAssimpModelLoader
-import org.oreon.core.vk.util.VkUtil
-import org.oreon.core.vk.wrapper.buffer.VkBufferHelper
+import org.oreon.core.vk.util.VkAssimpModelLoader.loadModel
+import org.oreon.core.vk.util.VkUtil.createLongArray
+import org.oreon.core.vk.util.VkUtil.createLongBuffer
+import org.oreon.core.vk.wrapper.buffer.VkBufferHelper.createDeviceLocalBuffer
 import org.oreon.core.vk.wrapper.buffer.VkUniformBuffer
 import org.oreon.core.vk.wrapper.command.SecondaryDrawIndexedCmdBuffer
 import org.oreon.core.vk.wrapper.pipeline.GraphicsPipeline
@@ -35,7 +36,7 @@ class Atmosphere : Renderable() {
     private val uniformBuffer: VkUniformBuffer
     override fun update() {
         super.update()
-        uniformBuffer.mapMemory(BufferUtil.createByteBuffer(worldTransform!!.worldMatrix))
+        uniformBuffer.mapMemory(createByteBuffer(worldTransform.worldMatrix))
     }
 
     override fun shutdown() {
@@ -46,24 +47,22 @@ class Atmosphere : Renderable() {
     init {
         val device = deviceManager.getLogicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE)
         val memoryProperties = deviceManager.getPhysicalDevice(DeviceType.MAJOR_GRAPHICS_DEVICE).memoryProperties
-        worldTransform!!.setLocalScaling(Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f)
-        val mesh = VkAssimpModelLoader.loadModel("models/obj/dome", "dome.obj")[0].mesh
-        if (mesh != null) {
-            ProceduralTexturing.dome(mesh)
-        }
+        worldTransform.setLocalScaling(Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f, Constants.ZFAR * 0.5f)
+        val mesh = loadModel("models/obj/dome", "dome.obj")[0].mesh
+        dome(mesh!!)
         val ubo = MemoryUtil.memAlloc(java.lang.Float.BYTES * 16)
-        ubo.put(BufferUtil.createByteBuffer(worldTransform!!.worldMatrix))
+        ubo.put(createByteBuffer(worldTransform.worldMatrix))
         ubo.flip()
         uniformBuffer = VkUniformBuffer(device.handle, memoryProperties, ubo)
         val vertexShader = ShaderModule(device.handle,
                 "shaders/atmosphere/atmosphere.vert.spv", VK10.VK_SHADER_STAGE_VERTEX_BIT)
         val graphicsShaderPipeline = ShaderPipeline(device.handle)
         graphicsShaderPipeline.addShaderModule(vertexShader)
-        graphicsShaderPipeline.createFragmentShader(if (config.AtmosphericScatteringEnable) "shaders/atmosphere/atmospheric_scattering.frag.spv" else "shaders/atmosphere/atmosphere.frag.spv")
+        graphicsShaderPipeline.createFragmentShader(if (BaseContext.config.AtmosphericScatteringEnable) "shaders/atmosphere/atmospheric_scattering.frag.spv" else "shaders/atmosphere/atmosphere.frag.spv")
         graphicsShaderPipeline.createShaderPipeline()
         val reflectionShaderPipeline = ShaderPipeline(device.handle)
         reflectionShaderPipeline.addShaderModule(vertexShader)
-        reflectionShaderPipeline.createFragmentShader("shaders/atmosphere/atmosphere_reflection.frag.spv")
+        reflectionShaderPipeline.createFragmentShader("shaders/atmosphere/atmospheric_scattering_reflection.frag.spv")
         reflectionShaderPipeline.createShaderPipeline()
         val descriptorSets: MutableList<DescriptorSet> = ArrayList()
         val descriptorSetLayouts: MutableList<DescriptorSetLayout> = ArrayList()
@@ -83,33 +82,34 @@ class Atmosphere : Renderable() {
         descriptorSetLayouts.add(descriptorSetLayout)
         descriptorSetLayouts.add(resources.descriptors[VkDescriptorName.DIRECTIONAL_LIGHT]!!.descriptorSetLayout)
         val vertexInput = VkVertexInput(VertexLayout.POS)
-        val vertexBuffer = BufferUtil.createByteBuffer(mesh!!.vertices, VertexLayout.POS)
-        val indexBuffer = BufferUtil.createByteBuffer(*mesh.indices)
-        val pushConstantsRange = java.lang.Float.BYTES * 19 + Integer.BYTES * 3
+        val vertexBuffer = createByteBuffer(mesh.vertices, VertexLayout.POS)
+        val indexBuffer = createByteBuffer(*mesh.indices)
+        val pushConstantsRange = java.lang.Float.BYTES * 20 + Integer.BYTES * 3
         val pushConstants = MemoryUtil.memAlloc(pushConstantsRange)
-        pushConstants.put(BufferUtil.createByteBuffer(getCamera().projectionMatrix))
-        pushConstants.putFloat(config.sunRadius)
-        pushConstants.putInt(config.frameWidth)
-        pushConstants.putInt(config.frameHeight)
+        pushConstants.put(createByteBuffer(getCamera().projectionMatrix))
+        pushConstants.putFloat(BaseContext.config.sunRadius)
+        pushConstants.putInt(BaseContext.config.frameWidth)
+        pushConstants.putInt(BaseContext.config.frameHeight)
         pushConstants.putInt(0)
-        pushConstants.putFloat(config.atmosphereBloomFactor)
-        pushConstants.putFloat(config.horizonVerticalShift)
+        pushConstants.putFloat(BaseContext.config.atmosphereBloomFactor)
+        pushConstants.putFloat(BaseContext.config.horizonVerticalShift)
+        pushConstants.putFloat(BaseContext.config.horizonVerticalShift * 2)
         pushConstants.flip()
         val graphicsPipeline: VkPipeline = GraphicsPipeline(device.handle,
                 graphicsShaderPipeline, vertexInput, VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                VkUtil.createLongBuffer(descriptorSetLayouts),
-                config.frameWidth,
-                config.frameHeight,
+                createLongBuffer(descriptorSetLayouts),
+                BaseContext.config.frameWidth,
+                BaseContext.config.frameHeight,
                 resources.offScreenFbo!!.renderPass!!.handle,
                 resources.offScreenFbo!!.colorAttachmentCount,
-                config.multisampling_sampleCount,
+                BaseContext.config.multisampling_sampleCount,
                 pushConstantsRange, VK10.VK_SHADER_STAGE_FRAGMENT_BIT)
-        val vertexBufferObject = VkBufferHelper.createDeviceLocalBuffer(
+        val vertexBufferObject = createDeviceLocalBuffer(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
                 device.transferQueue,
                 vertexBuffer, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-        val indexBufferObject = VkBufferHelper.createDeviceLocalBuffer(
+        val indexBufferObject = createDeviceLocalBuffer(
                 device.handle, memoryProperties,
                 device.getTransferCommandPool(Thread.currentThread().id)!!.handle,
                 device.transferQueue,
@@ -121,26 +121,28 @@ class Atmosphere : Renderable() {
                 resources.offScreenFbo!!.frameBuffer!!.handle,
                 resources.offScreenFbo!!.renderPass!!.handle,
                 0,
-                VkUtil.createLongArray(descriptorSets),
+                createLongArray(descriptorSets),
                 vertexBufferObject.handle,
                 indexBufferObject.handle,
                 mesh.indices.size,
                 pushConstants, VK10.VK_SHADER_STAGE_FRAGMENT_BIT)
-        val meshData = VkMeshData(vertexBuffer = vertexBuffer, vertexBufferObject = vertexBufferObject,
-            indexBuffer = indexBuffer, indexBufferObject = indexBufferObject)
-        val mainRenderInfo = VkRenderInfo(commandBuffer = mainCommandBuffer, pipeline = graphicsPipeline,
-                descriptorSets = descriptorSets, descriptorSetLayouts = descriptorSetLayouts)
+        val meshData: VkMeshData = VkMeshData(vertexBufferObject = vertexBufferObject,
+                vertexBuffer = vertexBuffer, indexBufferObject = indexBufferObject, indexBuffer = indexBuffer)
+        val mainRenderInfo: VkRenderInfo = VkRenderInfo(commandBuffer = mainCommandBuffer,
+                pipeline = graphicsPipeline, descriptorSets = descriptorSets,
+                descriptorSetLayouts = descriptorSetLayouts)
         addComponent(NodeComponentType.MESH_DATA, meshData)
-        addComponent(NodeComponentType.MAIN_RENDERINFO, mainRenderInfo);
-	    addComponent(NodeComponentType.WIREFRAME_RENDERINFO, mainRenderInfo);
+        addComponent(NodeComponentType.MAIN_RENDERINFO, mainRenderInfo)
+        addComponent(NodeComponentType.WIREFRAME_RENDERINFO, mainRenderInfo)
         if (resources.reflectionFbo != null) {
             val reflectionPipeline: VkPipeline = GraphicsPipeline(device.handle,
                     reflectionShaderPipeline, vertexInput, VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                    VkUtil.createLongBuffer(descriptorSetLayouts),
+                    createLongBuffer(descriptorSetLayouts),
                     resources.reflectionFbo!!.width,
                     resources.reflectionFbo!!.height,
                     resources.reflectionFbo!!.renderPass!!.handle,
-                    resources.reflectionFbo!!.colorAttachmentCount, 1)
+                    resources.reflectionFbo!!.colorAttachmentCount, 1,
+                    pushConstantsRange, VK10.VK_SHADER_STAGE_FRAGMENT_BIT)
             val reflectionCommandBuffer: CommandBuffer = SecondaryDrawIndexedCmdBuffer(
                     device.handle,
                     device.getGraphicsCommandPool(Thread.currentThread().id)!!.handle,
@@ -148,13 +150,14 @@ class Atmosphere : Renderable() {
                     resources.reflectionFbo!!.frameBuffer!!.handle,
                     resources.reflectionFbo!!.renderPass!!.handle,
                     0,
-                    VkUtil.createLongArray(descriptorSets),
+                    createLongArray(descriptorSets),
                     vertexBufferObject.handle,
                     indexBufferObject.handle,
-                    mesh.indices.size)
-
-            val reflectionRenderInfo = VkRenderInfo(commandBuffer = reflectionCommandBuffer, pipeline = reflectionPipeline)
-	    	addComponent(NodeComponentType.REFLECTION_RENDERINFO, reflectionRenderInfo);
+                    mesh.indices.size,
+                    pushConstants, VK10.VK_SHADER_STAGE_FRAGMENT_BIT)
+            val reflectionRenderInfo: VkRenderInfo = VkRenderInfo(commandBuffer = reflectionCommandBuffer,
+                    pipeline = reflectionPipeline)
+            addComponent(NodeComponentType.REFLECTION_RENDERINFO, reflectionRenderInfo)
         }
         graphicsShaderPipeline.destroy()
         reflectionShaderPipeline.destroy()

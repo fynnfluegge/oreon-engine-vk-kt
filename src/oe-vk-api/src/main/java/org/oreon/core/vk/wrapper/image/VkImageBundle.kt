@@ -25,10 +25,8 @@ open class VkImageBundle {
     }
 
     fun destroy() {
-        if (sampler != null) {
-            sampler!!.destroy()
-        }
-        imageView!!.destroy()
-        image!!.destroy()
+        sampler.destroy()
+        imageView.destroy()
+        image.destroy()
     }
 }

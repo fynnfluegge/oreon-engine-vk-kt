@@ -65,7 +65,7 @@ class SwapChain(logicalDevice: LogicalDevice,
         sampler = VkSampler(device, VK10.VK_FILTER_NEAREST, false, 0f,
                 VK10.VK_SAMPLER_MIPMAP_MODE_NEAREST, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_REPEAT)
         descriptorSet = DescriptorSet(device, descriptorPool, descriptorSetLayout!!.handlePointer)
-        descriptorSet!!.updateDescriptorImageBuffer(imageView, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        descriptorSet.updateDescriptorImageBuffer(imageView, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 sampler!!.handle, 0, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
     }
 
@@ -122,8 +122,8 @@ class SwapChain(logicalDevice: LogicalDevice,
     }
 
     fun createImageViews(imageFormat: Int) {
-        swapChainImageViews = ArrayList<VkImageView>(swapChainImages!!.size)
-        for (swapChainImage in swapChainImages!!) {
+        swapChainImageViews = ArrayList<VkImageView>(swapChainImages.size)
+        for (swapChainImage in swapChainImages) {
             val imageView = VkImageView(device, imageFormat, swapChainImage,
                     VK10.VK_IMAGE_ASPECT_COLOR_BIT)
             swapChainImageViews.add(imageView)
@@ -131,8 +131,8 @@ class SwapChain(logicalDevice: LogicalDevice,
     }
 
     fun createFrameBuffers(renderPass: Long) {
-        frameBuffers = ArrayList<VkFrameBuffer>(swapChainImages!!.size)
-        for (imageView in swapChainImageViews!!) {
+        frameBuffers = ArrayList<VkFrameBuffer>(swapChainImages.size)
+        for (imageView in swapChainImageViews) {
             val pAttachments = MemoryUtil.memAllocLong(1)
             pAttachments.put(0, imageView.handle)
             val frameBuffer = VkFrameBuffer(device,
@@ -145,7 +145,7 @@ class SwapChain(logicalDevice: LogicalDevice,
                                    vertexBuffer: Long, indexBuffer: Long, indexCount: Int,
                                    descriptorSets: LongArray) {
         renderCommandBuffers = ArrayList<CommandBuffer>()
-        for (frameBuffer in frameBuffers!!) {
+        for (frameBuffer in frameBuffers) {
             val commandBuffer: CommandBuffer = DrawCmdBuffer(
                     device, commandPool, pipeline!!.handle,
                     pipeline!!.layoutHandle, renderPass,
@@ -160,7 +160,7 @@ class SwapChain(logicalDevice: LogicalDevice,
         if (err != VK10.VK_SUCCESS) {
             throw AssertionError("Failed to acquire next swapchain image: " + VkUtil.translateVulkanResult(err))
         }
-        val currentRenderCommandBuffer = renderCommandBuffers!![pAcquiredImageIndex[0]]
+        val currentRenderCommandBuffer = renderCommandBuffers[pAcquiredImageIndex[0]]
         val pWaitDstStageMask = MemoryUtil.memAllocInt(2)
         pWaitDstStageMask.put(0, VK10.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
         pWaitDstStageMask.put(1, VK10.VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
@@ -175,20 +175,20 @@ class SwapChain(logicalDevice: LogicalDevice,
     }
 
     fun destroy() {
-        for (imageView in swapChainImageViews!!) {
+        for (imageView in swapChainImageViews) {
             imageView.destroy()
         }
-        for (framebuffer in frameBuffers!!) {
+        for (framebuffer in frameBuffers) {
             framebuffer.destroy()
         }
-        for (commandbuffer in renderCommandBuffers!!) {
+        for (commandbuffer in renderCommandBuffers) {
             commandbuffer.destroy()
         }
         vertexBufferObject.destroy()
         indexBufferObject.destroy()
         renderCompleteSemaphore.destroy()
         imageAcquiredSemaphore.destroy()
-        descriptorSet!!.destroy()
+        descriptorSet.destroy()
         descriptorSetLayout!!.destroy()
         sampler!!.destroy()
         pipeline!!.destroy()
@@ -202,7 +202,7 @@ class SwapChain(logicalDevice: LogicalDevice,
         extent = physicalDevice.swapChainCapabilities.surfaceCapabilities.currentExtent()
         extent.width(window.width)
         extent.height(window.height)
-        val imageFormat = VK10.VK_FORMAT_B8G8R8A8_UNORM
+        val imageFormat = VK10.VK_FORMAT_B8G8R8A8_SRGB
         val colorSpace = KHRSurface.VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
         physicalDevice.checkDeviceFormatAndColorSpaceSupport(imageFormat, colorSpace)
         var presentMode = KHRSurface.VK_PRESENT_MODE_MAILBOX_KHR

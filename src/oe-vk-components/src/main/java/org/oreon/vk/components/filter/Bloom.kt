@@ -25,18 +25,20 @@ import java.util.*
 class Bloom(deviceBundle: VkDeviceBundle,
             width: Int, height: Int, sceneImageView: VkImageView, specular_emission_bloom_attachment: VkImageView) {
     private val queue: VkQueue?
-    lateinit var bloomSceneImageBundle: VkImageBundle
-        private set
-    private lateinit var additiveBlendImageBundle: VkImageBundle
-    private lateinit var sceneBrightnessImageBundle: VkImageBundle
-    private lateinit var horizontalBloomBlurImageBundle_div2: VkImageBundle
-    private lateinit var horizontalBloomBlurImageBundle_div4: VkImageBundle
-    private lateinit var horizontalBloomBlurImageBundle_div8: VkImageBundle
-    private lateinit var horizontalBloomBlurImageBundle_div16: VkImageBundle
-    private lateinit var verticalBloomBlurImageBundle_div2: VkImageBundle
-    private lateinit var verticalBloomBlurImageBundle_div4: VkImageBundle
-    private lateinit var verticalBloomBlurImageBundle_div8: VkImageBundle
-    private lateinit var verticalBloomBlurImageBundle_div16: VkImageBundle
+    var bloomSceneImageBundle: VkImageBundle? = null
+    private var additiveBlendImageBundle: VkImageBundle? = null
+    private var sceneBrightnessImageBundle: VkImageBundle? = null
+    private var sceneBrightnessImageBundle_div4: VkImageBundle? = null
+    private var sceneBrightnessImageBundle_div8: VkImageBundle? = null
+    private var sceneBrightnessImageBundle_div16: VkImageBundle? = null
+    private var horizontalBloomBlurImageBundle_div2: VkImageBundle? = null
+    private var horizontalBloomBlurImageBundle_div4: VkImageBundle? = null
+    private var horizontalBloomBlurImageBundle_div8: VkImageBundle? = null
+    private var horizontalBloomBlurImageBundle_div16: VkImageBundle? = null
+    private var verticalBloomBlurImageBundle_div2: VkImageBundle? = null
+    private var verticalBloomBlurImageBundle_div4: VkImageBundle? = null
+    private var verticalBloomBlurImageBundle_div8: VkImageBundle? = null
+    private var verticalBloomBlurImageBundle_div16: VkImageBundle? = null
 
     // scene brightness resources
     private val sceneBrightnessPipeline: VkPipeline
@@ -44,53 +46,17 @@ class Bloom(deviceBundle: VkDeviceBundle,
     private val sceneBrightnessDescriptorSetLayout: DescriptorSetLayout
     private val sceneBrightnessDescriptorSets: MutableList<DescriptorSet>
 
-    // horizontal DIV 2 blur resources
-    private val horizontalBlurPipeline_div2: VkPipeline
-    private val horizontalBlurDescriptorSet_div2: DescriptorSet
-    private val horizontalBlurDescriptorSetLayout_div2: DescriptorSetLayout
-    private val horizontalBlurDescriptorSets_div2: MutableList<DescriptorSet>
+    // horizontal blur resources
+    private val horizontalBlurDescriptorSetLayout: DescriptorSetLayout
+    private val horizontalBlurDescriptorSets: MutableList<DescriptorSet>
+    private val horizontalBlurPipeline: VkPipeline
+    private val horizontalBlurDescriptorSet: DescriptorSet
 
-    // horizontal DIV 4 blur resources
-    private val horizontalBlurPipeline_div4: VkPipeline
-    private val horizontalBlurDescriptorSet_div4: DescriptorSet
-    private val horizontalBlurDescriptorSetLayout_div4: DescriptorSetLayout
-    private val horizontalBlurDescriptorSets_div4: MutableList<DescriptorSet>
-
-    // horizontal DIV 8 blur resources
-    private val horizontalBlurPipeline_div8: VkPipeline
-    private val horizontalBlurDescriptorSet_div8: DescriptorSet
-    private val horizontalBlurDescriptorSetLayout_div8: DescriptorSetLayout
-    private val horizontalBlurDescriptorSets_div8: MutableList<DescriptorSet>
-
-    // horizontal DIV 16 blur resources
-    private val horizontalBlurPipeline_div16: VkPipeline
-    private val horizontalBlurDescriptorSet_div16: DescriptorSet
-    private val horizontalBlurDescriptorSetLayout_div16: DescriptorSetLayout
-    private val horizontalBlurDescriptorSets_div16: MutableList<DescriptorSet>
-
-    // vertical DIV 2 blur resources
-    private val verticalBlurPipeline_div2: VkPipeline
-    private val verticalBlurDescriptorSet_div2: DescriptorSet
-    private val verticalBlurDescriptorSetLayout_div2: DescriptorSetLayout
-    private val verticalBlurDescriptorSets_div2: MutableList<DescriptorSet>
-
-    // vertical DIV 4 blur resources
-    private val verticalBlurPipeline_div4: VkPipeline
-    private val verticalBlurDescriptorSet_div4: DescriptorSet
-    private val verticalBlurDescriptorSetLayout_div4: DescriptorSetLayout
-    private val verticalBlurDescriptorSets_div4: MutableList<DescriptorSet>
-
-    // vertical DIV 8 blur resources
-    private val verticalBlurPipeline_div8: VkPipeline
-    private val verticalBlurDescriptorSet_div8: DescriptorSet
-    private val verticalBlurDescriptorSetLayout_div8: DescriptorSetLayout
-    private val verticalBlurDescriptorSets_div8: MutableList<DescriptorSet>
-
-    // vertical DIV 16 blur resources
-    private val verticalBlurPipeline_div16: VkPipeline
-    private val verticalBlurDescriptorSet_div16: DescriptorSet
-    private val verticalBlurDescriptorSetLayout_div16: DescriptorSetLayout
-    private val verticalBlurDescriptorSets_div16: MutableList<DescriptorSet>
+    // vertical blur resources
+    private val verticalBlurPipeline: VkPipeline
+    private val verticalBlurDescriptorSet: DescriptorSet
+    private val verticalBlurDescriptorSetLayout: DescriptorSetLayout
+    private val verticalBlurDescriptorSets: MutableList<DescriptorSet>
 
     // blend resources
     private val blendPipeline: VkPipeline
@@ -107,16 +73,15 @@ class Bloom(deviceBundle: VkDeviceBundle,
     private val bloomSceneDescriptorSet: DescriptorSet
     private val bloomSceneDescriptorSetLayout: DescriptorSetLayout
     private val bloomSceneDescriptorSets: MutableList<DescriptorSet>
+    private val pushConstants: ByteBuffer
     private val pushConstants_blend: ByteBuffer
-    private val pushConstants_div2: ByteBuffer
-    private val pushConstants_div4: ByteBuffer
-    private val pushConstants_div8: ByteBuffer
-    private val pushConstants_div16: ByteBuffer
     private val width: Int
     private val height: Int
     fun record(commandBuffer: CommandBuffer) {
 
         // scene luminance
+        commandBuffer.pushConstantsCmd(sceneBrightnessPipeline.layoutHandle,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants)
         commandBuffer.bindComputePipelineCmd(sceneBrightnessPipeline.handle)
         commandBuffer.bindComputeDescriptorSetsCmd(sceneBrightnessPipeline.layoutHandle,
                 createLongArray(sceneBrightnessDescriptorSets))
@@ -128,34 +93,13 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)
 
-        // div2 horizontal blur
-        commandBuffer.pushConstantsCmd(horizontalBlurPipeline_div2.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div2)
-        commandBuffer.bindComputePipelineCmd(horizontalBlurPipeline_div2.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(horizontalBlurPipeline_div2.layoutHandle,
-                createLongArray(horizontalBlurDescriptorSets_div2))
+        // horizontal blur
+        commandBuffer.pushConstantsCmd(horizontalBlurPipeline.layoutHandle,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants)
+        commandBuffer.bindComputePipelineCmd(horizontalBlurPipeline.handle)
+        commandBuffer.bindComputeDescriptorSetsCmd(horizontalBlurPipeline.layoutHandle,
+                createLongArray(horizontalBlurDescriptorSets))
         commandBuffer.dispatchCmd(width / 16, height / 16, 1)
-        // div4 horizontal blur
-        commandBuffer.pushConstantsCmd(horizontalBlurPipeline_div4.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div4)
-        commandBuffer.bindComputePipelineCmd(horizontalBlurPipeline_div4.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(horizontalBlurPipeline_div4.layoutHandle,
-                createLongArray(horizontalBlurDescriptorSets_div4))
-        commandBuffer.dispatchCmd(width / 32, height / 32, 1)
-        // div8 horizontal blur
-        commandBuffer.pushConstantsCmd(horizontalBlurPipeline_div8.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div8)
-        commandBuffer.bindComputePipelineCmd(horizontalBlurPipeline_div8.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(horizontalBlurPipeline_div8.layoutHandle,
-                createLongArray(horizontalBlurDescriptorSets_div8))
-        commandBuffer.dispatchCmd(width / 64, height / 64, 1)
-        // div16 horizontal blur
-        commandBuffer.pushConstantsCmd(horizontalBlurPipeline_div16.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div16)
-        commandBuffer.bindComputePipelineCmd(horizontalBlurPipeline_div16.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(horizontalBlurPipeline_div16.layoutHandle,
-                createLongArray(horizontalBlurDescriptorSets_div16))
-        commandBuffer.dispatchCmd(width / 128, height / 128, 1)
 
         // barrier
         commandBuffer.pipelineMemoryBarrierCmd(
@@ -163,34 +107,13 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                 VK10.VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)
 
-        // div2 vertical blur
-        commandBuffer.pushConstantsCmd(verticalBlurPipeline_div2.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div2)
-        commandBuffer.bindComputePipelineCmd(verticalBlurPipeline_div2.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(verticalBlurPipeline_div2.layoutHandle,
-                createLongArray(verticalBlurDescriptorSets_div2))
+        // vertical blur
+        commandBuffer.pushConstantsCmd(verticalBlurPipeline.layoutHandle,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants)
+        commandBuffer.bindComputePipelineCmd(verticalBlurPipeline.handle)
+        commandBuffer.bindComputeDescriptorSetsCmd(verticalBlurPipeline.layoutHandle,
+                createLongArray(verticalBlurDescriptorSets))
         commandBuffer.dispatchCmd(width / 16, height / 16, 1)
-        // div4 horizontal blur
-        commandBuffer.pushConstantsCmd(verticalBlurPipeline_div4.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div4)
-        commandBuffer.bindComputePipelineCmd(verticalBlurPipeline_div4.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(verticalBlurPipeline_div4.layoutHandle,
-                createLongArray(verticalBlurDescriptorSets_div4))
-        commandBuffer.dispatchCmd(width / 32, height / 32, 1)
-        // div8 horizontal blur
-        commandBuffer.pushConstantsCmd(verticalBlurPipeline_div8.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div8)
-        commandBuffer.bindComputePipelineCmd(verticalBlurPipeline_div8.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(verticalBlurPipeline_div8.layoutHandle,
-                createLongArray(verticalBlurDescriptorSets_div8))
-        commandBuffer.dispatchCmd(width / 64, height / 64, 1)
-        // div16 horizontal blur
-        commandBuffer.pushConstantsCmd(verticalBlurPipeline_div16.layoutHandle,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstants_div16)
-        commandBuffer.bindComputePipelineCmd(verticalBlurPipeline_div16.handle)
-        commandBuffer.bindComputeDescriptorSetsCmd(verticalBlurPipeline_div16.layoutHandle,
-                createLongArray(verticalBlurDescriptorSets_div16))
-        commandBuffer.dispatchCmd(width / 128, height / 128, 1)
 
         // barrier
         commandBuffer.pipelineMemoryBarrierCmd(
@@ -222,11 +145,19 @@ class Bloom(deviceBundle: VkDeviceBundle,
     fun initializeImages(device: VkDevice?,
                          memoryProperties: VkPhysicalDeviceMemoryProperties?, width: Int, height: Int) {
         val bloomSceneImage: VkImage = Image2DDeviceLocal(device, memoryProperties,
-                width, height, VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
+                width, height, VK10.VK_FORMAT_B8G8R8A8_SRGB, VK10.VK_IMAGE_USAGE_STORAGE_BIT
                 or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
         val bloomSceneImageView = VkImageView(device!!,
-                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, bloomSceneImage.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+                VK10.VK_FORMAT_B8G8R8A8_SRGB, bloomSceneImage.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
         bloomSceneImageBundle = VkImageBundle(bloomSceneImage, bloomSceneImageView)
+        val additiveBlendImage: VkImage = Image2DDeviceLocal(device, memoryProperties,
+                width, height, VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
+                or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
+        val additiveBlendImageView = VkImageView(device,
+                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, additiveBlendImage.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        additiveBlendImageBundle = VkImageBundle(additiveBlendImage, additiveBlendImageView)
+
+        // brightness images
         val sceneBrightnessImage: VkImage = Image2DDeviceLocal(device, memoryProperties,
                 width, height, VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
                 or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
@@ -236,12 +167,34 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
         sceneBrightnessImageBundle = VkImageBundle(sceneBrightnessImage, sceneBrightnessImageView,
                 brightnessSampler)
-        val additiveBlendImage: VkImage = Image2DDeviceLocal(device, memoryProperties,
-                width, height, VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
+        val sceneBrightnessImage_div4: VkImage = Image2DDeviceLocal(device, memoryProperties,
+                (width / 4.0f).toInt(), (height / 4.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
                 or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
-        val additiveBlendImageView = VkImageView(device,
-                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, additiveBlendImage.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
-        additiveBlendImageBundle = VkImageBundle(additiveBlendImage, additiveBlendImageView)
+        val sceneBrightnessImageView_div4 = VkImageView(device,
+                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, sceneBrightnessImage_div4.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        val brightnessSampler_div4 = VkSampler(device, VK10.VK_FILTER_LINEAR,
+                false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
+        sceneBrightnessImageBundle_div4 = VkImageBundle(sceneBrightnessImage_div4, sceneBrightnessImageView_div4,
+                brightnessSampler_div4)
+        val sceneBrightnessImage_div8: VkImage = Image2DDeviceLocal(device, memoryProperties,
+                (width / 8.0f).toInt(), (height / 8.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
+                or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
+        val sceneBrightnessImageView_div8 = VkImageView(device,
+                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, sceneBrightnessImage_div8.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        val brightnessSampler_div8 = VkSampler(device, VK10.VK_FILTER_LINEAR,
+                false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
+        sceneBrightnessImageBundle_div8 = VkImageBundle(sceneBrightnessImage_div8, sceneBrightnessImageView_div8,
+                brightnessSampler_div8)
+        val sceneBrightnessImage_div16: VkImage = Image2DDeviceLocal(device, memoryProperties,
+                (width / 12.0f).toInt(), (height / 12.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT, VK10.VK_IMAGE_USAGE_STORAGE_BIT
+                or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
+        val sceneBrightnessImageView_div16 = VkImageView(device,
+                VK10.VK_FORMAT_R16G16B16A16_SFLOAT, sceneBrightnessImage_div16.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
+        val brightnessSampler_div16 = VkSampler(device, VK10.VK_FILTER_LINEAR,
+                false, 0f, VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR, 0f, VK10.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
+        sceneBrightnessImageBundle_div16 = VkImageBundle(sceneBrightnessImage_div16, sceneBrightnessImageView_div16,
+                brightnessSampler_div16)
+
 
         // horizontal Bloom Blur images
         val horizontalBloomBlurImage_div2: VkImage = Image2DDeviceLocal(device, memoryProperties,
@@ -266,7 +219,7 @@ class Bloom(deviceBundle: VkDeviceBundle,
         horizontalBloomBlurImageBundle_div8 = VkImageBundle(horizontalBloomBlurImage_div8,
                 horizontalBloomBlurImageView_div8)
         val horizontalBloomBlurImage_div16: VkImage = Image2DDeviceLocal(device, memoryProperties,
-                (width / 16.0f).toInt(), (height / 16.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT,
+                (width / 12.0f).toInt(), (height / 12.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT,
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
         val horizontalBloomBlurImageView_div16 = VkImageView(device,
                 VK10.VK_FORMAT_R16G16B16A16_SFLOAT, horizontalBloomBlurImage_div16.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
@@ -296,7 +249,7 @@ class Bloom(deviceBundle: VkDeviceBundle,
         verticalBloomBlurImageBundle_div8 = VkImageBundle(verticalBloomBlurImage_div8,
                 verticalBloomBlurImageView_div8)
         val verticalBloomBlurImage_div16: VkImage = Image2DDeviceLocal(device, memoryProperties,
-                (width / 16.0f).toInt(), (height / 16.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT,
+                (width / 12.0f).toInt(), (height / 12.0f).toInt(), VK10.VK_FORMAT_R16G16B16A16_SFLOAT,
                 VK10.VK_IMAGE_USAGE_STORAGE_BIT or VK10.VK_IMAGE_USAGE_SAMPLED_BIT)
         val verticalBloomBlurImageView_div16 = VkImageView(device,
                 VK10.VK_FORMAT_R16G16B16A16_SFLOAT, verticalBloomBlurImage_div16.handle, VK10.VK_IMAGE_ASPECT_COLOR_BIT)
@@ -305,44 +258,26 @@ class Bloom(deviceBundle: VkDeviceBundle,
     }
 
     fun shutdown() {
-        bloomSceneImageBundle.destroy()
-        additiveBlendImageBundle.destroy()
-        sceneBrightnessImageBundle.destroy()
-        horizontalBloomBlurImageBundle_div2.destroy()
-        horizontalBloomBlurImageBundle_div4.destroy()
-        horizontalBloomBlurImageBundle_div8.destroy()
-        horizontalBloomBlurImageBundle_div16.destroy()
-        verticalBloomBlurImageBundle_div2.destroy()
-        verticalBloomBlurImageBundle_div4.destroy()
-        verticalBloomBlurImageBundle_div8.destroy()
-        verticalBloomBlurImageBundle_div16.destroy()
+        bloomSceneImageBundle!!.destroy()
+        additiveBlendImageBundle!!.destroy()
+        sceneBrightnessImageBundle!!.destroy()
+        horizontalBloomBlurImageBundle_div2!!.destroy()
+        horizontalBloomBlurImageBundle_div4!!.destroy()
+        horizontalBloomBlurImageBundle_div8!!.destroy()
+        horizontalBloomBlurImageBundle_div16!!.destroy()
+        verticalBloomBlurImageBundle_div2!!.destroy()
+        verticalBloomBlurImageBundle_div4!!.destroy()
+        verticalBloomBlurImageBundle_div8!!.destroy()
+        verticalBloomBlurImageBundle_div16!!.destroy()
         sceneBrightnessPipeline.destroy()
         sceneBrightnessDescriptorSet.destroy()
         sceneBrightnessDescriptorSetLayout.destroy()
-        horizontalBlurPipeline_div2.destroy()
-        horizontalBlurDescriptorSet_div2.destroy()
-        horizontalBlurDescriptorSetLayout_div2.destroy()
-        horizontalBlurPipeline_div4.destroy()
-        horizontalBlurDescriptorSet_div4.destroy()
-        horizontalBlurDescriptorSetLayout_div4.destroy()
-        horizontalBlurPipeline_div8.destroy()
-        horizontalBlurDescriptorSet_div8.destroy()
-        horizontalBlurDescriptorSetLayout_div8.destroy()
-        horizontalBlurPipeline_div16.destroy()
-        horizontalBlurDescriptorSet_div16.destroy()
-        horizontalBlurDescriptorSetLayout_div16.destroy()
-        verticalBlurPipeline_div2.destroy()
-        verticalBlurDescriptorSet_div2.destroy()
-        verticalBlurDescriptorSetLayout_div2.destroy()
-        verticalBlurPipeline_div4.destroy()
-        verticalBlurDescriptorSet_div4.destroy()
-        verticalBlurDescriptorSetLayout_div4.destroy()
-        verticalBlurPipeline_div8.destroy()
-        verticalBlurDescriptorSet_div8.destroy()
-        verticalBlurDescriptorSetLayout_div8.destroy()
-        verticalBlurPipeline_div16.destroy()
-        verticalBlurDescriptorSet_div16.destroy()
-        verticalBlurDescriptorSetLayout_div16.destroy()
+        horizontalBlurPipeline.destroy()
+        horizontalBlurDescriptorSet.destroy()
+        horizontalBlurDescriptorSetLayout.destroy()
+        verticalBlurPipeline.destroy()
+        verticalBlurDescriptorSet.destroy()
+        verticalBlurDescriptorSetLayout.destroy()
         blendPipeline.destroy()
         blendDescriptorSet.destroy()
         blendDescriptorSetLayout.destroy()
@@ -374,33 +309,38 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 "shaders/filter/bloom/additiveBlend.comp.spv")
         val bloomSceneShader: ShaderModule = ComputeShader(device,
                 "shaders/filter/bloom/bloomScene.comp.spv")
+        pushConstants = MemoryUtil.memAlloc(java.lang.Float.BYTES * 12)
+        pushConstants.putFloat(width / 2.0f)
+        pushConstants.putFloat(height / 2.0f)
+        pushConstants.putFloat(width / 4.0f)
+        pushConstants.putFloat(height / 4.0f)
+        pushConstants.putFloat(width / 8.0f)
+        pushConstants.putFloat(height / 8.0f)
+        pushConstants.putFloat(width / 12.0f)
+        pushConstants.putFloat(height / 12.0f)
+        pushConstants.putFloat(2f)
+        pushConstants.putFloat(4f)
+        pushConstants.putFloat(8f)
+        pushConstants.putFloat(12f)
+        pushConstants.flip()
         val pushConstantRange = java.lang.Float.BYTES * 2
         pushConstants_blend = MemoryUtil.memAlloc(pushConstantRange)
         pushConstants_blend.putFloat(width.toFloat())
         pushConstants_blend.putFloat(height.toFloat())
         pushConstants_blend.flip()
-        pushConstants_div2 = MemoryUtil.memAlloc(pushConstantRange)
-        pushConstants_div2.putFloat(width / 2.0f)
-        pushConstants_div2.putFloat(height / 2.0f)
-        pushConstants_div2.flip()
-        pushConstants_div4 = MemoryUtil.memAlloc(pushConstantRange)
-        pushConstants_div4.putFloat(width / 4.0f)
-        pushConstants_div4.putFloat(height / 4.0f)
-        pushConstants_div4.flip()
-        pushConstants_div8 = MemoryUtil.memAlloc(pushConstantRange)
-        pushConstants_div8.putFloat(width / 8.0f)
-        pushConstants_div8.putFloat(height / 8.0f)
-        pushConstants_div8.flip()
-        pushConstants_div16 = MemoryUtil.memAlloc(pushConstantRange)
-        pushConstants_div16.putFloat(width / 16.0f)
-        pushConstants_div16.putFloat(height / 16.0f)
-        pushConstants_div16.flip()
+
 
         // scene brightness
-        sceneBrightnessDescriptorSetLayout = DescriptorSetLayout(device, 2)
+        sceneBrightnessDescriptorSetLayout = DescriptorSetLayout(device, 5)
         sceneBrightnessDescriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
         sceneBrightnessDescriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        sceneBrightnessDescriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        sceneBrightnessDescriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        sceneBrightnessDescriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
         sceneBrightnessDescriptorSetLayout.create()
         sceneBrightnessDescriptorSet = DescriptorSet(device, descriptorPool!!.handle,
@@ -410,228 +350,152 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         sceneBrightnessDescriptorSet.updateDescriptorImageBuffer(
-                sceneBrightnessImageBundle.imageView.handle,
+                sceneBrightnessImageBundle!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        sceneBrightnessDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div4!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        sceneBrightnessDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div8!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        sceneBrightnessDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div16!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 4,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         sceneBrightnessDescriptorSets = ArrayList()
         sceneBrightnessDescriptorSets.add(sceneBrightnessDescriptorSet)
         descriptorSetLayouts.add(sceneBrightnessDescriptorSetLayout)
         sceneBrightnessPipeline = VkPipeline(device)
+        sceneBrightnessPipeline.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, java.lang.Float.BYTES * 12)
         sceneBrightnessPipeline.setLayout(createLongBuffer(descriptorSetLayouts))
         sceneBrightnessPipeline.createComputePipeline(sceneBrightnessShader)
-        descriptorSetLayouts = ArrayList()
 
         // horizontal blur
-
-        // DIV 2
-        horizontalBlurDescriptorSetLayout_div2 = DescriptorSetLayout(device, 2)
-        horizontalBlurDescriptorSetLayout_div2.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+        horizontalBlurDescriptorSetLayout = DescriptorSetLayout(device, 8)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div2.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div2.create()
-        horizontalBlurDescriptorSet_div2 = DescriptorSet(device, descriptorPool.handle,
-                horizontalBlurDescriptorSetLayout_div2.handlePointer)
-        horizontalBlurDescriptorSet_div2.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div2.imageView.handle,
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(6, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.addLayoutBinding(7, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        horizontalBlurDescriptorSetLayout.create()
+        horizontalBlurDescriptorSet = DescriptorSet(device, descriptorPool.handle,
+                horizontalBlurDescriptorSetLayout.handlePointer)
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div2!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        horizontalBlurDescriptorSet_div2.updateDescriptorImageBuffer(
-                sceneBrightnessImageBundle.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle.sampler.handle, 1,
-                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-        horizontalBlurDescriptorSets_div2 = ArrayList()
-        horizontalBlurDescriptorSets_div2.add(horizontalBlurDescriptorSet_div2)
-        descriptorSetLayouts.add(horizontalBlurDescriptorSetLayout_div2)
-        horizontalBlurPipeline_div2 = VkPipeline(device)
-        horizontalBlurPipeline_div2.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        horizontalBlurPipeline_div2.setLayout(createLongBuffer(descriptorSetLayouts))
-        horizontalBlurPipeline_div2.createComputePipeline(horizontalBlurShader)
-        descriptorSetLayouts = ArrayList()
-
-        // DIV 4
-        horizontalBlurDescriptorSetLayout_div4 = DescriptorSetLayout(device, 2)
-        horizontalBlurDescriptorSetLayout_div4.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div4.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div4.create()
-        horizontalBlurDescriptorSet_div4 = DescriptorSet(device, descriptorPool.handle,
-                horizontalBlurDescriptorSetLayout_div4.handlePointer)
-        horizontalBlurDescriptorSet_div4.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div4.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div4!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        horizontalBlurDescriptorSet_div4.updateDescriptorImageBuffer(
-                sceneBrightnessImageBundle.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle.sampler.handle, 1,
-                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-        horizontalBlurDescriptorSets_div4 = ArrayList()
-        horizontalBlurDescriptorSets_div4.add(horizontalBlurDescriptorSet_div4)
-        descriptorSetLayouts.add(horizontalBlurDescriptorSetLayout_div4)
-        horizontalBlurPipeline_div4 = VkPipeline(device)
-        horizontalBlurPipeline_div4.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        horizontalBlurPipeline_div4.setLayout(createLongBuffer(descriptorSetLayouts))
-        horizontalBlurPipeline_div4.createComputePipeline(horizontalBlurShader)
-        descriptorSetLayouts = ArrayList()
-
-        // DIV 8
-        horizontalBlurDescriptorSetLayout_div8 = DescriptorSetLayout(device, 2)
-        horizontalBlurDescriptorSetLayout_div8.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div8.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div8.create()
-        horizontalBlurDescriptorSet_div8 = DescriptorSet(device, descriptorPool.handle,
-                horizontalBlurDescriptorSetLayout_div8.handlePointer)
-        horizontalBlurDescriptorSet_div8.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div8.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div8!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        horizontalBlurDescriptorSet_div8.updateDescriptorImageBuffer(
-                sceneBrightnessImageBundle.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle.sampler.handle, 1,
-                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-        horizontalBlurDescriptorSets_div8 = ArrayList()
-        horizontalBlurDescriptorSets_div8.add(horizontalBlurDescriptorSet_div8)
-        descriptorSetLayouts.add(horizontalBlurDescriptorSetLayout_div8)
-        horizontalBlurPipeline_div8 = VkPipeline(device)
-        horizontalBlurPipeline_div8.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        horizontalBlurPipeline_div8.setLayout(createLongBuffer(descriptorSetLayouts))
-        horizontalBlurPipeline_div8.createComputePipeline(horizontalBlurShader)
-        descriptorSetLayouts = ArrayList()
-
-        // DIV 16
-        horizontalBlurDescriptorSetLayout_div16 = DescriptorSetLayout(device, 2)
-        horizontalBlurDescriptorSetLayout_div16.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div16.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        horizontalBlurDescriptorSetLayout_div16.create()
-        horizontalBlurDescriptorSet_div16 = DescriptorSet(device, descriptorPool.handle,
-                horizontalBlurDescriptorSetLayout_div16.handlePointer)
-        horizontalBlurDescriptorSet_div16.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div16.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div16!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        horizontalBlurDescriptorSet_div16.updateDescriptorImageBuffer(
-                sceneBrightnessImageBundle.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle.sampler.handle, 1,
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle!!.sampler.handle, 4,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-        horizontalBlurDescriptorSets_div16 = ArrayList()
-        horizontalBlurDescriptorSets_div16.add(horizontalBlurDescriptorSet_div16)
-        descriptorSetLayouts.add(horizontalBlurDescriptorSetLayout_div16)
-        horizontalBlurPipeline_div16 = VkPipeline(device)
-        horizontalBlurPipeline_div16.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        horizontalBlurPipeline_div16.setLayout(createLongBuffer(descriptorSetLayouts))
-        horizontalBlurPipeline_div16.createComputePipeline(horizontalBlurShader)
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div4!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle_div4!!.sampler.handle, 5,
+                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div8!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle_div8!!.sampler.handle, 6,
+                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+        horizontalBlurDescriptorSet.updateDescriptorImageBuffer(
+                sceneBrightnessImageBundle_div16!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, sceneBrightnessImageBundle_div16!!.sampler.handle, 7,
+                VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
         descriptorSetLayouts = ArrayList()
+        horizontalBlurDescriptorSets = ArrayList()
+        horizontalBlurDescriptorSets.add(horizontalBlurDescriptorSet)
+        descriptorSetLayouts.add(horizontalBlurDescriptorSetLayout)
+        horizontalBlurPipeline = VkPipeline(device)
+        horizontalBlurPipeline.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, java.lang.Float.BYTES * 12)
+        horizontalBlurPipeline.setLayout(createLongBuffer(descriptorSetLayouts))
+        horizontalBlurPipeline.createComputePipeline(horizontalBlurShader)
 
         // vertical blur
-
-        // DIV 2
-        verticalBlurDescriptorSetLayout_div2 = DescriptorSetLayout(device, 2)
-        verticalBlurDescriptorSetLayout_div2.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+        verticalBlurDescriptorSetLayout = DescriptorSetLayout(device, 8)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div2.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+        verticalBlurDescriptorSetLayout.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                 VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div2.create()
-        verticalBlurDescriptorSet_div2 = DescriptorSet(device, descriptorPool.handle,
-                verticalBlurDescriptorSetLayout_div2.handlePointer)
-        verticalBlurDescriptorSet_div2.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div2.imageView.handle,
+        verticalBlurDescriptorSetLayout.addLayoutBinding(2, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(3, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(4, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(5, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(6, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.addLayoutBinding(7, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
+        verticalBlurDescriptorSetLayout.create()
+        verticalBlurDescriptorSet = DescriptorSet(device, descriptorPool.handle,
+                verticalBlurDescriptorSetLayout.handlePointer)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                verticalBloomBlurImageBundle_div2!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSet_div2.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div2.imageView.handle,
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                verticalBloomBlurImageBundle_div4!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSets_div2 = ArrayList()
-        verticalBlurDescriptorSets_div2.add(verticalBlurDescriptorSet_div2)
-        descriptorSetLayouts.add(verticalBlurDescriptorSetLayout_div2)
-        verticalBlurPipeline_div2 = VkPipeline(device)
-        verticalBlurPipeline_div2.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        verticalBlurPipeline_div2.setLayout(createLongBuffer(descriptorSetLayouts))
-        verticalBlurPipeline_div2.createComputePipeline(verticalBlurShader)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                verticalBloomBlurImageBundle_div8!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                verticalBloomBlurImageBundle_div16!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div2!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 4,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div4!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 5,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div8!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 6,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        verticalBlurDescriptorSet.updateDescriptorImageBuffer(
+                horizontalBloomBlurImageBundle_div16!!.imageView.handle,
+                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 7,
+                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         descriptorSetLayouts = ArrayList()
-
-        // DIV 4
-        verticalBlurDescriptorSetLayout_div4 = DescriptorSetLayout(device, 2)
-        verticalBlurDescriptorSetLayout_div4.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div4.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div4.create()
-        verticalBlurDescriptorSet_div4 = DescriptorSet(device, descriptorPool.handle,
-                verticalBlurDescriptorSetLayout_div4.handlePointer)
-        verticalBlurDescriptorSet_div4.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div4.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSet_div4.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div4.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSets_div4 = ArrayList()
-        verticalBlurDescriptorSets_div4.add(verticalBlurDescriptorSet_div4)
-        descriptorSetLayouts.add(verticalBlurDescriptorSetLayout_div4)
-        verticalBlurPipeline_div4 = VkPipeline(device)
-        verticalBlurPipeline_div4.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        verticalBlurPipeline_div4.setLayout(createLongBuffer(descriptorSetLayouts))
-        verticalBlurPipeline_div4.createComputePipeline(verticalBlurShader)
-        descriptorSetLayouts = ArrayList()
-
-        // DIV 8
-        verticalBlurDescriptorSetLayout_div8 = DescriptorSetLayout(device, 2)
-        verticalBlurDescriptorSetLayout_div8.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div8.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div8.create()
-        verticalBlurDescriptorSet_div8 = DescriptorSet(device, descriptorPool.handle,
-                verticalBlurDescriptorSetLayout_div8.handlePointer)
-        verticalBlurDescriptorSet_div8.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div8.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSet_div8.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div8.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSets_div8 = ArrayList()
-        verticalBlurDescriptorSets_div8.add(verticalBlurDescriptorSet_div8)
-        descriptorSetLayouts.add(verticalBlurDescriptorSetLayout_div8)
-        verticalBlurPipeline_div8 = VkPipeline(device)
-        verticalBlurPipeline_div8.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        verticalBlurPipeline_div8.setLayout(createLongBuffer(descriptorSetLayouts))
-        verticalBlurPipeline_div8.createComputePipeline(verticalBlurShader)
-        descriptorSetLayouts = ArrayList()
-
-        // DIV 16
-        verticalBlurDescriptorSetLayout_div16 = DescriptorSetLayout(device, 2)
-        verticalBlurDescriptorSetLayout_div16.addLayoutBinding(0, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div16.addLayoutBinding(1, VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                VK10.VK_SHADER_STAGE_COMPUTE_BIT)
-        verticalBlurDescriptorSetLayout_div16.create()
-        verticalBlurDescriptorSet_div16 = DescriptorSet(device, descriptorPool.handle,
-                verticalBlurDescriptorSetLayout_div16.handlePointer)
-        verticalBlurDescriptorSet_div16.updateDescriptorImageBuffer(
-                horizontalBloomBlurImageBundle_div16.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSet_div16.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div16.imageView.handle,
-                VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
-                VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
-        verticalBlurDescriptorSets_div16 = ArrayList()
-        verticalBlurDescriptorSets_div16.add(verticalBlurDescriptorSet_div16)
-        descriptorSetLayouts.add(verticalBlurDescriptorSetLayout_div16)
-        verticalBlurPipeline_div16 = VkPipeline(device)
-        verticalBlurPipeline_div16.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
-        verticalBlurPipeline_div16.setLayout(createLongBuffer(descriptorSetLayouts))
-        verticalBlurPipeline_div16.createComputePipeline(verticalBlurShader)
-        descriptorSetLayouts = ArrayList()
+        verticalBlurDescriptorSets = ArrayList()
+        verticalBlurDescriptorSets.add(verticalBlurDescriptorSet)
+        descriptorSetLayouts.add(verticalBlurDescriptorSetLayout)
+        verticalBlurPipeline = VkPipeline(device)
+        verticalBlurPipeline.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, java.lang.Float.BYTES * 12)
+        verticalBlurPipeline.setLayout(createLongBuffer(descriptorSetLayouts))
+        verticalBlurPipeline.createComputePipeline(verticalBlurShader)
 
         // aditive Blend
         bloomBlurSampler_div2 = VkSampler(device, VK10.VK_FILTER_LINEAR,
@@ -657,25 +521,26 @@ class Bloom(deviceBundle: VkDeviceBundle,
         blendDescriptorSet = DescriptorSet(device, descriptorPool.handle,
                 blendDescriptorSetLayout.handlePointer)
         blendDescriptorSet.updateDescriptorImageBuffer(
-                additiveBlendImageBundle.imageView.handle,
+                additiveBlendImageBundle!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         blendDescriptorSet.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div2.imageView.handle,
+                verticalBloomBlurImageBundle_div2!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, bloomBlurSampler_div2.handle, 1,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
         blendDescriptorSet.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div4.imageView.handle,
+                verticalBloomBlurImageBundle_div4!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, bloomBlurSampler_div4.handle, 2,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
         blendDescriptorSet.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div8.imageView.handle,
+                verticalBloomBlurImageBundle_div8!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, bloomBlurSampler_div8.handle, 3,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
         blendDescriptorSet.updateDescriptorImageBuffer(
-                verticalBloomBlurImageBundle_div16.imageView.handle,
+                verticalBloomBlurImageBundle_div16!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, bloomBlurSampler_div16.handle, 4,
                 VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+        descriptorSetLayouts = ArrayList()
         blendDescriptorSets = ArrayList()
         blendDescriptorSets.add(blendDescriptorSet)
         descriptorSetLayouts.add(blendDescriptorSetLayout)
@@ -683,7 +548,6 @@ class Bloom(deviceBundle: VkDeviceBundle,
         blendPipeline.setPushConstantsRange(VK10.VK_SHADER_STAGE_COMPUTE_BIT, pushConstantRange)
         blendPipeline.setLayout(createLongBuffer(descriptorSetLayouts))
         blendPipeline.createComputePipeline(additiveBlendShader)
-        descriptorSetLayouts = ArrayList()
 
         // final bloom scene
         bloomSceneDescriptorSetLayout = DescriptorSetLayout(device, 4)
@@ -703,7 +567,7 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 0,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         bloomSceneDescriptorSet.updateDescriptorImageBuffer(
-                additiveBlendImageBundle.imageView.handle,
+                additiveBlendImageBundle!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 1,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         bloomSceneDescriptorSet.updateDescriptorImageBuffer(
@@ -711,9 +575,10 @@ class Bloom(deviceBundle: VkDeviceBundle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 2,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
         bloomSceneDescriptorSet.updateDescriptorImageBuffer(
-                bloomSceneImageBundle.imageView.handle,
+                bloomSceneImageBundle!!.imageView.handle,
                 VK10.VK_IMAGE_LAYOUT_GENERAL, -1, 3,
                 VK10.VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+        descriptorSetLayouts = ArrayList()
         bloomSceneDescriptorSets = ArrayList()
         bloomSceneDescriptorSets.add(bloomSceneDescriptorSet)
         descriptorSetLayouts.add(bloomSceneDescriptorSetLayout)
