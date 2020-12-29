@@ -15,7 +15,7 @@ class VkSystemMonitor : VkGUI() {
         super.init(imageView, waitSemaphores)
         bean = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
         val screen0 = UIScreen()
-        screen0.elements.add(VkColorPanel(Vec4f(0f, 0f, 0f, 0.5f), 0, 215, 325, 225,
+        screen0.elements.add(VkColorPanel(Vec4f(0f, 0f, 0f, 0.5f), 0, 160, 220, 160,
                 panelMeshBuffer, guiOverlayFbo))
         screen0.elements.add(VkStaticTextPanel("FPS:", 20, 45, 40, 40,
                 fontsImageBundle.imageView, fontsImageBundle.sampler, guiOverlayFbo))
@@ -25,7 +25,7 @@ class VkSystemMonitor : VkGUI() {
                 fontsImageBundle.imageView, fontsImageBundle.sampler, guiOverlayFbo))
         screen0.elements.add(VkDynamicTextPanel("000", 120, 90, 40, 40,
                 fontsImageBundle.imageView, fontsImageBundle.sampler, guiOverlayFbo))
-        screen0.elements.add(VkTexturePanel("textures/logo/Vulkan_Logo.png", 0, 220, 310, 130,
+        screen0.elements.add(VkTexturePanel("textures/logo/Vulkan_Logo.png", 0, 160, 200, 75,
                 panelMeshBuffer, guiOverlayFbo))
         screens.add(screen0)
     }

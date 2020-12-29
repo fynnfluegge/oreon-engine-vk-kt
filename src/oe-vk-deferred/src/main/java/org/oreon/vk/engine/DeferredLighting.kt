@@ -40,7 +40,7 @@ class DeferredLighting(deviceBundle: VkDeviceBundle,
         commandBuffer.bindComputePipelineCmd(computePipeline.handle)
         commandBuffer.bindComputeDescriptorSetsCmd(computePipeline.layoutHandle,
                 createLongArray(descriptorSets))
-        commandBuffer.dispatchCmd(width / 16, height / 16, 1)
+        commandBuffer.dispatchCmd(width / 2, height / 2, 1)
     }
 
     fun shutdown() {
