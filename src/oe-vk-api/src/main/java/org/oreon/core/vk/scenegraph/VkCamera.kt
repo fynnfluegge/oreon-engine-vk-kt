@@ -13,8 +13,8 @@ import org.oreon.core.vk.descriptor.DescriptorSetLayout
 import org.oreon.core.vk.wrapper.buffer.VkUniformBuffer
 import org.oreon.core.vk.wrapper.descriptor.VkDescriptor
 
-class VkCamera : Camera(Vec3f(-160f, 45f, -72f), Vec3f(0.5668308f, -0.028192917f, 0.82335174f),
-        Vec3f(0.015936304f, 0.9996025f, 0.023256794f)) {
+class VkCamera : Camera(Vec3f(-179.94112f,63.197327f,-105.08341f), Vec3f(0.48035842f,-0.39218548f,0.7845039f),
+        Vec3f(0.20479666f,0.9198862f,0.33446646f)) {
     private var uniformBuffer: VkUniformBuffer? = null
     lateinit var descriptorSet: DescriptorSet
     lateinit var descriptorSetLayout: DescriptorSetLayout
