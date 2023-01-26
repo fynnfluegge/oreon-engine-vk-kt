@@ -1,7 +1,16 @@
-# Oreon Engine (Kotlin - Vulkan)
+![Banner](https://github.com/fynnfluegge/oreon-engine/blob/master/docs/_images/welcome_image.png)
 
-Welcome to the Cross-Platform Kotlin 3D Engine.
+<h1 align="center">Oreon Engine (Kotlin - Vulkan)</h1>
 
-OpenGL and Vulkan Binding for Kotlin is done  [LWJGL 3](https://www.lwjgl.org/).
+<div align="center">
+	<img src="https://raw.githubusercontent.com/gilbarbara/logos/master/logos/kotlin.svg" width="120"/>
+  <img src="https://raw.githubusercontent.com/gilbarbara/logos/master/logos/vulkan.svg"/>
+</div>
 
-Kotlin Implementation of [oreon-engine-java](https://github.com/fynnfluegge/oreon-engine).
+#
+
+Welcome to the Kotlin 3D Engine.
+
+Vulkan Binding for Kotlin [LWJGL 3](https://www.lwjgl.org/).
+
+This repository is the Kotlin Implementation of [oreon-engine-java](https://github.com/fynnfluegge/oreon-engine).
